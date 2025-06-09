@@ -1,0 +1,45 @@
+﻿########################
+## From mpo_scripted_triggers.txt
+########################
+# All changes I make here will be noted with comments started by: C&L
+
+valid_confederation_member_trigger = {
+	is_playable_character = yes
+	is_tributary = no
+	is_landed = yes
+	is_independent_ruler = yes
+	is_alive = yes
+	NOR = {
+		has_trait = conqueror
+		has_trait = greatest_of_khans
+		is_at_war_with = $CHARACTER$
+		is_at_war_with = $CHARACTER$.top_liege
+		custom_tooltip = {
+			text = no_raiding_hostility_tt
+			$CHARACTER$ = {
+				is_causing_raid_hostility_towards = prev
+			}
+		}
+	}
+	highest_held_title_tier <= tier_duchy # C&L: Might change this if I decide to allow kingdoms into confederations/leagues. If I do, will likely need to add stricter restrictions for them, like smaller realm sizes
+	trigger_if = {
+		limit = {
+			government_has_flag = government_is_nomadic
+		}
+		custom_tooltip = {
+			text = low_authority_tt
+			OR = {
+				has_realm_law = nomadic_authority_1
+				has_realm_law = nomadic_authority_2
+			}
+		}
+	}
+	custom_tooltip = { # C&L: Base game just checks if you are Nomadic/Tribal, changed it so that it checks you have a valid government for either a confederation or a league
+		OR = {
+			CL_uses_confederations = yes
+			CL_uses_leagues = yes
+		}
+		text = CL_has_valid_government_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed it to better show that more governments can join
+	}
+	is_confederation_member = no
+}

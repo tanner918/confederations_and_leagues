@@ -1,0 +1,17 @@
+﻿l_english:
+## Laws
+ tooltip_confederation_elector_culture_tt: "[candidate.GetSheHe|U] does not belong to the [federation|E]'s [culture|E] ([title.MakeScope.Var('confederation_culture').Culture.GetName]): $VALUE|=+0$"
+
+ confederation_elective_succession_law: "Federation Elective"
+ confederation_elective_candidates_tooltip: "In order to be a valid Candidate under [federation|E] Elective, a character must fulfill one of the following conditions:\n$EFFECT_LIST_BULLET$Be a legitimate [close_family|E] member of the current ruler\n$EFFECT_LIST_BULLET$Be a [vassal|E]\n#weak C&L Note: Due to the way the election inheritance laws are handled, if a vassal were to inherit the title with this succession law, they will have their government forcefully changed to whatever government the previous holder had. So, for example, if the holder of the title is Feudal, and their title heir is Clan, that Clan heir, when they inherit this title, will become Feudal. Until I figure out how to get around this, landed candidates must have the same government as the current holder."
+ confederation_elective_succession_law_effects: "The [ruler|E] and all direct [vassals|E] can nominate a [title_heir|E] from among themselves and the [close_family|E] of the ruler. [voting_strength|E] is primarily determined by [prestige_level|E], [piety_level|E], and, for [confederation|E]-based kingdoms, the number of [count|E]-[title_tier|E] [vassals|E]."
+ confederation_elective_electors_tooltip: "In order to be a valid [elector|E] under [federation|E] Elective, a vassal must fulfill all the following conditions:\n$EFFECT_LIST_BULLET$Be [count|E]-[rank|E] or higher\n$EFFECT_LIST_BULLET$Be a direct [vassal|E] of the [title|E]\n$EFFECT_LIST_BULLET$Has valid [government|E] for the [confederation|E]- or [league|E]-kingdom\n$EFFECT_LIST_BULLET$Not have the [GetTrait('incapable').GetName( GetNullCharacter )] [trait|E]\n$EFFECT_LIST_BULLET$Not be at [war|E] with the [title|E] holder"
+
+ ## Character Interactions
+ NO_FRIGHTENING_NEIGHBOR_REASON: "Has no neighboring [ruler|E] worth defending against: $VALUE|=+0$"
+ TOO_MANY_CONFEDERATION_VASSALS_REASON: "Too many members already: $VALUE|=+0$"
+ LEFT_YOUR_CONFEDERATION_REASON: "Recently left [actor.confederation.GetName]: $VALUE|=+0$"
+ join_confederation_abandoned_confederation_tt: "You abandoned [recipient.confederation.GetName]: $VALUE|=+0$"
+ JOINING_CONFEDERATION_WAR_REASON: "You will join [recipient.confederation.GetName]'s defensive war: $VALUE|=+0$"
+ join_confederation_neighboring_foe_tt: "A nearby [ruler|E] threatens [recipient.confederation.GetName]: $VALUE|=+0$"
+

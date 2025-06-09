@@ -1,0 +1,16 @@
+﻿league = {
+	texture = "gfx/interface/icons/government_types/confederation_government.dds"
+	parent = government
+	alias = { league_government }
+}
+
+league_member = {
+	texture = "gfx/interface/icons/government_types/confederation_government.dds"
+	parent = league
+	alias = { league_members }
+}
+
+federation = {
+	texture = "gfx/interface/icons/government_types/confederation_government.dds"
+	parent = government
+}

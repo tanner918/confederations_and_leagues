@@ -1,0 +1,38 @@
+﻿########################
+## From 09_dlc_mpo_scripted_effects.txt
+########################
+# All changes I make here will be noted with comments started by: C&L
+
+offer_confederation_accepter_effect = {
+	if = {
+		limit = {
+			scope:actor = {
+				is_confederation_member = no
+			}
+		}
+		# C&L: Made tooltip shown properly reflect what type of confederation/league would be formed
+		if = {
+			limit = { CL_uses_leagues = yes }
+			custom_tooltip = create_league_recipient_tt
+		}
+		else = {
+			custom_tooltip = create_confederation_recipient_tt
+		}
+	}
+	else = {
+		custom_tooltip = join_confederation_recipient_tt
+	}
+
+	# C&L: Made tooltips shown properly reflect what type of confederation/league would be formed
+	if = {
+		limit = { CL_uses_leagues = yes }
+		custom_tooltip = league_defensive_wars_tt
+		custom_tooltip = unlock_leave_league_interaction_tt
+	}
+	else = {
+		custom_tooltip = confederation_defensive_wars_tt
+		custom_tooltip = unlock_leave_confederation_interaction_tt
+	}
+}
+
+# confederation_realm_transfer_effect was also in this file, but it doesn't seem to actually get used anywhere. Noting that down here in case there ends up being any issues, I know to see if that was a possible cause.

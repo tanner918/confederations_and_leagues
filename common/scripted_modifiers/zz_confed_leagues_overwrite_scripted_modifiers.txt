@@ -1,0 +1,118 @@
+﻿########################
+## From 00_elective_successions_scripted_modifiers.txt
+########################
+# All changes I make here will be noted with comments started by: C&L
+
+elector_voting_pattern_confederation_modifier = {
+	modifier = {
+		desc = tooltip_confederation_elector_culture_tt # C&L: Changed this tooltip localization to better fit both confederations and leagues, as well as actually show what the relevant culture is
+		add = -30
+		NOT = {
+			this = scope:candidate
+		}
+		scope:title = { # C&L: Base game checks the candidate's current confederation's confederation_culture
+			has_variable = confederation_culture
+			var:confederation_culture = {
+				NOT = {
+					this = scope:candidate.culture
+				}
+				this = root.culture
+			}
+		}
+	}
+	modifier = { # C&L: Added this modifier to mimic the above one, but for the confederation_faith variable instead, for faith-based leagues/confederations
+		desc = tooltip_confederation_elector_faith_tt
+		add = -30
+		NOT = {
+			this = scope:candidate
+		}
+		scope:title = {
+			has_variable = confederation_faith
+			var:confederation_faith = {
+				NOT = {
+					this = scope:candidate.faith
+				}
+				this = root.faith
+			}
+		}
+	}
+	modifier = {
+		desc = tooltip_confederation_elector_their_turn_tt
+		add = 60
+		NOR = {
+			this = scope:holder
+			any_close_family_member = {
+				this = scope:holder
+			}
+			house ?= {
+				any_house_member = {
+					this = scope:holder
+				}
+			}
+		}
+		scope:candidate = {
+			NOR = {
+				any_close_family_member = {
+					this = scope:holder
+				}
+				house ?= {
+					any_house_member = {
+						this = scope:holder
+					}
+				}
+			}
+		}
+	}
+	modifier = {
+		desc = tooltip_confederation_too_young_tt
+		add = -30
+		NOT = {
+			this = scope:candidate
+		}
+		scope:candidate = {
+			age <= 12
+		}
+	}
+
+	modifier = {
+		desc = tooltip_confederation_terrible_prowess_tt
+		prowess < low_skill_rating
+		add = -15
+	}
+	modifier = {
+		desc = tooltip_confederation_bad_prowess_tt
+		prowess < mediocre_skill_rating
+		prowess > low_skill_rating
+		add = -10
+	}
+	modifier = {
+		desc = tooltip_confederation_good_prowess_tt
+		prowess >= high_skill_rating
+		prowess < high_skill_rating
+		add = 10
+	}
+	modifier = {
+		desc = tooltip_confederation_great_prowess_tt
+		prowess >= very_high_skill_rating
+		prowess < very_high_skill_rating
+		add = 15
+	}
+	modifier = {
+		desc = tooltip_confederation_amazing_prowess_tt
+		prowess > extremely_high_skill_rating
+		prowess <= extremely_high_skill_rating
+		add = 20
+	}
+	modifier = { # C&L: Added this modifier so that for faith-based confederations/leagues, the Head of Faith of the confederation_faith gets a bonus
+		desc = tooltip_is_confederation_faith_hof
+		add = 30
+		scope:title = {
+			has_variable = confederation_faith
+			var:confederation_faith = {
+				this = root.faith
+				exists = religious_head
+				scope:candidate = religious_head
+			}
+		}
+	}
+}

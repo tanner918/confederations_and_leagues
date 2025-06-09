@@ -1,0 +1,15 @@
+﻿CL_historical_names = {
+	
+	categories = {
+		historicity flavor
+	}
+	
+	default = CL_historical_names_all
+
+	CL_historical_names_all = {}
+
+	CL_historical_names_none = {}
+
+	CL_historical_names_during_ck3 = {}
+
+}

@@ -1,0 +1,46 @@
+﻿## Checks if the character's government can use "Confederations"
+# To be called from within a character scope
+CL_uses_confederations = {
+	OR = {
+		government_has_flag = government_is_nomadic
+		government_has_flag = government_is_tribal
+		has_variable = allowed_in_confederations # This is a variable to be added to a character on the off chance there is a situation where they should be allowed into a confederation, even when they normally wouldn't be allowed to
+	}
+}
+
+## Checks if the character's government can use "Leagues"
+# To be called from within a character scope
+CL_uses_leagues = {
+	OR = {
+		government_has_flag = government_is_feudal
+		government_has_flag = government_is_clan
+		government_has_flag = government_is_theocracy # Might turn this into a game rule
+		government_has_flag = government_is_republic # Might turn this into a game rule
+		has_variable = allowed_in_leagues # This is a variable to be added to a character on the off chance there is a situation where they should be allowed into a defensive league, even when they normally wouldn't be allowed to
+
+		# Below should let admin realms use leagues. But, given how admin realms work, with characters constantly switching between being landed/unlanded, I will likely not allow them in to prevent any issues. They also are less likely to ever be in a position where joining a defensive league would be necessary.
+		# AND = {
+		# 	government_has_flag = government_is_administrative
+		# 	is_independent_ruler = yes
+		# 	is_landed = yes
+		# }
+	}
+}
+
+## Checks whether a character's faith can form faith-based confederations/leagues
+# AVAILABLE INPUTS:
+# scope:actor = Character who invited another ruler to join a confederation through the offer_confederation_interaction
+# scope:recipient = Character who received and accepted the invite to join a confederation
+
+CL_faith_based_confed_league_trigger = {
+	# Not sure if these are going to be the best conditions, but wanted to come up with something. Will likely be changed.
+	faith = {
+		OR = { # Faith must have at least one of these
+			has_doctrine = doctrine_pluralism_fundamentalist
+			has_doctrine = tenet_communal_identity
+		}
+		NOT = { # Faith can't have any of these
+			has_doctrine = doctrine_pluralism_pluralistic
+		}
+	}
+}
