@@ -2016,6 +2016,7 @@ confederation_kingdom_decision = {
 		trigger_else_if = { # C&L: In a Confederation, with a kingdom-tier member
 			limit = {
 				confederation = {
+					any_confederation_member = { highest_held_title_tier = tier_kingdom }
 					has_variable = confed_type
 					var:confed_type = flag:CL_type_confederation
 				}

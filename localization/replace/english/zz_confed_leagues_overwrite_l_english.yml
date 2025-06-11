@@ -17,3 +17,5 @@
 
  ## Decisions
  confederation_succession_tt: "The new [title|E] gets the [GetLaw('confederation_elective_succession_law').GetName] [succession_law|E]"
+ confederation_kingdom_decision_confirm: "With me as its Ruler!"
+ mpo_decisions_events.0005.desc: "Once, we were warbands bound by need, our unity as fleeting as the seasons. Now, we stand as one.\n\nThe warriors who rode at my side now kneel before my throne.\n\nLet them sing my name together at my great table — the [new_king_ruler.GetPrimaryTitle.GetTierAsName] is born, and I am its [ROOT.Char.Custom('my_title')]."
