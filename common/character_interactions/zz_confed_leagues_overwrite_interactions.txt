@@ -1827,7 +1827,7 @@ offer_confederation_interaction = {
 		OR = {
 			AND = {
 				is_independent_ruler = yes
-				highest_held_title_tier < tier_kingdom # C&L: Might change this if I decide to allow kingdoms into leagues/confederations. If I do, it would need to be with certain restrictions, like having a smaller realm size
+				CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 				has_character_flag = forming_confederation
 			}
 			is_confederation_member = yes
@@ -1961,7 +1961,7 @@ join_confederation_interaction = {
 				CL_uses_confederations = yes
 				CL_uses_leagues = yes
 			}
-			highest_held_title_tier <= tier_duchy # C&L: Might change this if I decide to allow kingdoms into confederations/leagues. If I do, will likely need stricter restrictions for them, like having a smaller realm size
+			CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 			is_landed = yes
 			is_confederation_member = no
 		}

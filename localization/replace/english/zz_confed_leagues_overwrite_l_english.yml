@@ -15,3 +15,5 @@
  JOINING_CONFEDERATION_WAR_REASON: "You will join [recipient.confederation.GetName]'s defensive war: $VALUE|=+0$"
  join_confederation_neighboring_foe_tt: "A nearby [ruler|E] threatens [recipient.confederation.GetName]: $VALUE|=+0$"
 
+ ## Decisions
+ confederation_succession_tt: "The new [title|E] gets the [GetLaw('confederation_elective_succession_law').GetName] [succession_law|E]"

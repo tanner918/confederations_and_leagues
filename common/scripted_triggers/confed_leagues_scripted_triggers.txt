@@ -45,7 +45,27 @@ CL_faith_based_confed_league_trigger = {
 	}
 }
 
-## Checks whether a character has an appropriate title tier to be in a confederation or a league (will need to modify later if/when I decide to allow smaller kingdoms in)
+## Checks whether a character has an appropriate title tier to be in a confederation or a league, depending on what game rule they have set
 CL_has_appropriate_title_tier = {
-	highest_held_title_tier < tier_kingdom
+	trigger_if = {
+		limit = { has_game_rule = CL_allow_kingdoms_off }
+		highest_held_title_tier < tier_kingdom
+	}
+	trigger_else_if = {
+		limit = { has_game_rule = CL_allow_kingdoms_on }
+		highest_held_title_tier <= tier_kingdom
+	}
+	trigger_else_if = {
+		limit = { has_game_rule = CL_allow_kingdoms_limited }
+		custom_tooltip = {
+			text = CL_allow_kingdoms_limited_trigger_tt
+			OR = {
+				highest_held_title_tier < tier_kingdom
+				AND = {
+					highest_held_title_tier = tier_kingdom
+					realm_size <= 8 # Not sure right now what realm size will be best balance-wise, so this will likely need to be changed later on
+				}
+			}
+		}
+	}
 }

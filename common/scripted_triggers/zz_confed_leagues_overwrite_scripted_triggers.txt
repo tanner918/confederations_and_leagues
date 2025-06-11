@@ -21,7 +21,7 @@ valid_confederation_member_trigger = {
 			}
 		}
 	}
-	highest_held_title_tier <= tier_duchy # C&L: Might change this if I decide to allow kingdoms into confederations/leagues. If I do, will likely need to add stricter restrictions for them, like smaller realm sizes
+	CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead change depending on what game rule the player has set
 	trigger_if = {
 		limit = {
 			government_has_flag = government_is_nomadic

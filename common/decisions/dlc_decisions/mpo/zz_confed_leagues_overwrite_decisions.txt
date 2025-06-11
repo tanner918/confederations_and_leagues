@@ -39,7 +39,7 @@ call_for_confederation_decision = {
 	}
 
 	is_shown = {
-		highest_held_title_tier <= tier_duchy # C&L: Might change this if I decide to allow kingdoms into confederations/leagues. If I do, will likely need to include stricter restrictions on them, like smaller realm sizes
+		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 		OR = {
 			# C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments
 			CL_uses_confederations = yes
@@ -55,7 +55,7 @@ call_for_confederation_decision = {
 
 	is_valid = {
 		is_independent_ruler = yes
-		highest_held_title_tier <= tier_duchy # C&L: Might change this if I decide to allow kingdoms into leagues/confederations
+		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 		is_tributary = no
 		custom_tooltip = { # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments, and shows proper tooltip
 			OR = {
@@ -152,9 +152,15 @@ call_for_confederation_decision = {
 				add = 100
 				if = {
 					limit = {
-						highest_held_title_tier = tier_duchy # C&L: If I decide to allow kingdoms into confederations/leagues, will likely need to add a check for if their highest held tier is kingdom, to increase the cost further for them
+						highest_held_title_tier = tier_duchy
 					}
 					add = 200
+				}
+				if = {
+					limit = {
+						highest_held_title_tier = tier_kingdom # C&L: The base game increases the cost for duchies, so added this to further increase the cost for kingdoms
+					}
+					add = 300
 				}
 				if = {
 					limit = {
@@ -260,7 +266,7 @@ call_for_confederation_decision = {
 			CL_uses_leagues = yes
 		}
 		is_independent_ruler = yes
-		highest_held_title_tier <= tier_duchy # C&L: Might change this if I decide to allow kingdoms into confederations/leagues.
+		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 		is_tributary = no
 		is_playable_character = yes
 		is_confederation_member = no
@@ -1876,9 +1882,29 @@ confederation_kingdom_decision = {
 		}
 	}
 
-	# C&L: Made decision tooltip change depending on which type of confederation/league you are currently in
+	# C&L: Made decision tooltip change depending on which type of confederation/league you are currently in, and whether there is a kingdom in it
 	selection_tooltip = {
 		first_valid = {
+			triggered_desc = {
+				trigger = {
+					confederation = {
+						any_confederation_member = { highest_held_title_tier = tier_kingdom }
+						has_variable = confed_type
+						var:confed_type = flag:CL_type_league
+					}
+				}
+				desc = league_empire_decision_tooltip
+			}
+			triggered_desc = {
+				trigger = {
+					confederation = {
+						any_confederation_member = { highest_held_title_tier = tier_kingdom }
+						has_variable = confed_type
+						var:confed_type = flag:CL_type_confederation
+					}
+				}
+				desc = confederation_empire_decision_tooltip
+			}
 			triggered_desc = {
 				trigger = {
 					confederation = {
@@ -1899,10 +1925,53 @@ confederation_kingdom_decision = {
 	}
 
 	is_valid = {
-		prestige_level >= 3
+		prestige_level >= 3 # C&L: Will need to see if this should be changed for elevating a confederation/league with a kingdom-tier member, to make it a little harder, but I already changed some of the other requirements, so not sure if this should also be changed.
 		is_independent_ruler = yes
 		# C&L: Made these tooltips change depending on whether you are in a confederation or a league
-		trigger_if = { # C&L: In a Defensive League
+		trigger_if = { # C&L: In a Defensive League, with a kingdom-tier member
+			limit = {
+				confederation = {
+					any_confederation_member = { highest_held_title_tier = tier_kingdom }
+					has_variable = confed_type
+					var:confed_type = flag:CL_type_league
+				}
+			}
+			custom_tooltip = {
+				text = league_empire_decision_vassal_req
+				confederation = {
+					any_confederation_member = {
+						highest_held_title_tier >= tier_county
+						count >= 8
+					}
+				}
+			}
+			custom_tooltip = {
+				text = league_empire_decision_vassal_opinion_req
+				NOT = {
+					confederation = {
+						any_confederation_member = {
+							this != root
+							opinion = {
+								target = root
+								value < 40
+							}
+						}
+					}
+				}
+			}
+			custom_tooltip = {
+				text = league_kingdom_decision_vassal_prestige_level_req
+				NOT = {
+					confederation = {
+						any_confederation_member = {
+							this != root
+							prestige_level >= root.prestige_level
+						}
+					}
+				}
+			}
+		}
+		trigger_else_if = { # C&L: In a Defensive League
 			limit = {
 				confederation = {
 					has_variable = confed_type
@@ -1934,6 +2003,48 @@ confederation_kingdom_decision = {
 			}
 			custom_tooltip = {
 				text = league_kingdom_decision_vassal_prestige_level_req
+				NOT = {
+					confederation = {
+						any_confederation_member = {
+							this != root
+							prestige_level >= root.prestige_level
+						}
+					}
+				}
+			}
+		}
+		trigger_else_if = { # C&L: In a Confederation, with a kingdom-tier member
+			limit = {
+				confederation = {
+					has_variable = confed_type
+					var:confed_type = flag:CL_type_confederation
+				}
+			}
+			custom_tooltip = {
+				text = confederation_empire_decision_vassal_req
+				confederation = {
+					any_confederation_member = {
+						highest_held_title_tier >= tier_county
+						count >= 8
+					}
+				}
+			}
+			custom_tooltip = {
+				text = confederation_empire_decision_vassal_opinion_req
+				NOT = {
+					confederation = {
+						any_confederation_member = {
+							this != root
+							opinion = {
+								target = root
+								value < 40
+							}
+						}
+					}
+				}
+			}
+			custom_tooltip = {
+				text = confederation_kingdom_decision_vassal_prestige_level_req
 				NOT = {
 					confederation = {
 						any_confederation_member = {
@@ -2059,11 +2170,31 @@ confederation_kingdom_decision = {
 		if = {
 			limit = {
 				confederation = {
+					any_confederation_member = { highest_held_title_tier = tier_kingdom }
+					has_variable = confed_type
+					var:confed_type = flag:CL_type_league
+				}
+			}
+			custom_tooltip = league_empire_creation_tt
+		}
+		else_if = {
+			limit = {
+				confederation = {
 					has_variable = confed_type
 					var:confed_type = flag:CL_type_league
 				}
 			}
 			custom_tooltip = league_kingdom_creation_tt
+		}
+		else_if = {
+			limit = {
+				confederation = {
+					any_confederation_member = { highest_held_title_tier = tier_kingdom }
+					has_variable = confed_type
+					var:confed_type = flag:CL_type_confederation
+				}
+			}
+			custom_tooltip = confederation_empire_creation_tt
 		}
 		else = {
 			custom_tooltip = confederation_kingdom_creation_tt
@@ -2080,7 +2211,17 @@ confederation_kingdom_decision = {
 					add_to_list = confederation_vassals
 					every_tributary = {
 						limit = {
-							highest_held_title_tier <= tier_duchy
+							trigger_if = { # C&L Modified this so that if any member of the confederation is a kingdom (meaning they have the game rules set to allow them into confederations/leagues), then also make kingdom tributaries vassals as well
+								limit = {
+									scope:old_confederation = {
+										any_confederation_member = { highest_held_title_tier = tier_kingdom }
+									}
+								}
+								highest_held_title_tier <= tier_kingdom
+							}
+							trigger_else = { # C&L Otherwise, if there are no kingdoms in the confederation/league, then only consider up to duchy-tier tributaries
+								highest_held_title_tier <= tier_duchy
+							}
 						}
 						add_to_list = confederation_vassals
 					}
@@ -2090,9 +2231,23 @@ confederation_kingdom_decision = {
 				save_scope_as = old_title
 			}
 			save_scope_as = confederation_offerer
-			# C&L: The base game always makes this kingdom title use the culture-based confederation name, which can lead to weird name changes from the old confederation to the new elevated kingdom title. This scripted effect instead determines what the actual name should be, and makes the title, outputting the title to scope:new_title. TITLE_TIER will pretty much always be kingdom, but if I allow kingdoms into confederations/leagues, might need to look into allowing empires to be created through this decision as well.
-			CL_determine_elevated_title_name = {
-				TITLE_TIER = kingdom
+			# C&L: The base game always makes this kingdom title use the culture-based confederation name, which can lead to weird name changes from the old confederation to the new elevated kingdom title. This scripted effect instead determines what the actual name should be, and makes the title, outputting the title to scope:new_title.
+			# C&L: Depending on whether there is a kingdom-tier member in the confederation/league will determine whether an empire or kingdom title gets created
+			if = {
+				limit = {
+					scope:old_confederation = {
+						any_confederation_member = { highest_held_title_tier = tier_kingdom }
+					}
+				}
+
+				CL_determine_elevated_title_name = {
+					TITLE_TIER = empire
+				}
+			}
+			else = {
+				CL_determine_elevated_title_name = {
+					TITLE_TIER = kingdom
+				}
 			}
 			# C&L: Here, base game also assigns the character's culture as the confederation_culture variable in the new title. That stuff is being handled in the above scripted_effect
 			

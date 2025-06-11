@@ -51,7 +51,7 @@ TODO:
 
 
 "common\on_action\title_on_actions.txt"
-- on_title_gain (Lines 452-460 makes someone leave a confederation they are in if they gain a kingdom+ title, so that will need to be modified based off how we determine to handle kingdoms in confederations/leagues)
+- [DONE, TEST] on_title_gain (Lines 452-460 makes someone leave a confederation they are in if they gain a kingdom+ title, so that will need to be modified based off how we determine to handle kingdoms in confederations/leagues)
 
 
 "common\on_action\dlc\mpo\mpo_on_actions_2.txt"

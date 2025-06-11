@@ -1,4 +1,4 @@
-﻿# This is the base game file, since I don't think the content in this file can really be modified without issues.
+﻿# C&L: This is the base game file, since I don't think the content in this file can really be modified without issues.
 # Changes I make are noted with C&L
 
 mpo_yearly_events_nomads = {

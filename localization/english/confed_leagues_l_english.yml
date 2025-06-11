@@ -21,6 +21,7 @@
  join_league_interaction_desc: "Request membership in [recipient.GetShortUINamePossessiveNoTooltip] [league|E]."
  join_league_neighboring_foe_tt: "A nearby [ruler|E] threatens the [league|E]: $VALUE|=+0$"
  CL_has_valid_government_tt: "Has valid [government|E] for [confederation|E] or [league|E]"
+ CL_allow_kingdoms_limited_trigger_tt: "Must be either:\n $EFFECT_LIST_BULLET$ A [count|E] or [duke|E]\n $EFFECT_LIST_BULLET$ A [king|E] with a [realm_size|E] of 8 or less"
 
 ## Decisions
  call_for_league_decision: "Call for Defensive League"
@@ -41,11 +42,19 @@
  league_kingdom_decision: "Elevate League"
  league_kingdom_decision_desc: "What was once a bond of necessity — warriors sworn to stand together against the storm — must now become something greater. Let these independent leaders of this defensive league become vassals under a single banner."
  league_kingdom_decision_tooltip: "Disband the [league|E] and form a new [kingdom|E] with the [league_members|E]"
+ league_empire_decision_tooltip: "Disband the [league|E] and form a new [empire|E] with the [league_members|E]"
+ confederation_empire_decision_tooltip: "Disband the [confederation|E] and form a new [empire|E] with the [confederates|E]"
  league_kingdom_decision_vassal_req: "You are at least #high 5#! [league_members|E]"
+ league_empire_decision_vassal_req: "You are at least #high 8#! [league_members|E]"
+ confederation_empire_decision_vassal_req: "You are at least #high 8#! [confederates|E]"
  league_kingdom_decision_vassal_opinion_req: "All of the [league_members|E] have at least #P 25#! [opinion|E] of you"
+ league_empire_decision_vassal_opinion_req: "All of the [league_members|E] have at least #P 40#! [opinion|E] of you"
+ confederation_empire_decision_vassal_opinion_req: "All of the [confederates|E] have at least #P 40#! [opinion|E] of you"
  league_kingdom_decision_vassal_prestige_level_req: "No other [league_member|E] has the same or higher [prestige_i][prestige_level|E]"
  league_kingdom_decision_vassal_wars_req: "There are [league_members|E] at [war|E]"
  league_kingdom_creation_tt: "You get a [kingdom|E]-[title_tier|E] [title|E] and all [league_members|E] become your [vassals|E]\n@alert_icon!#alert_trial The Kingdom will have no [de_jure|E] lands#!"
+ league_empire_creation_tt: "You get an [empire|E]-[title_tier|E] [title|E] and all [league_members|E] become your [vassals|E]\n@alert_icon!#alert_trial The Empire will have no [de_jure|E] lands#!"
+ confederation_empire_creation_tt: "You get an [empire|E]-[title_tier|E] [title|E] and all [confederates|E] become your [vassals|E]\n@alert_icon!#alert_trial The Empire will have no [de_jure|E] lands#!"
 
 ## Concepts
  game_concept_league: "Defensive League"
@@ -80,14 +89,15 @@
  mpo_decisions_events.0001.desc_league: "At the whim of [ROOT.Char.GetFaith.HighGodName], my [ROOT.Char.GetPrimaryTitle.GetTierAsName] can be broken like the shaft of a single arrow! For my modest realm shares the land of [home_kingdom.GetNameNoTier] with such warbands as [threat.GetTitledFirstNamePossessive] fearsome [threat.GetCulture.GetCollectiveNoun].\n\nBut — if my people's arrows were bound with those of friends and kin? Could an enemy grip so easily shatter us?\n\n#EMP Brothers, sisters — name no master, but a voice for the people! A voice to scorn [threat.GetTitledFirstNameNoTooltip], and all the world!#!"
  mpo_decisions_events.0001.desc_confederation: "At the whim of [ROOT.Char.GetFaith.HighGodName], my [ROOT.Char.GetPrimaryTitle.GetTierAsName] can be broken like the shaft of a single arrow! For my modest tribe shares the land of [home_kingdom.GetNameNoTier] with such warbands as [threat.GetTitledFirstNamePossessive] fearsome [threat.GetCulture.GetCollectiveNoun].\n\nBut — if my people's arrows were bound with those of friends and kin? Could an enemy grip so easily shatter us?\n\n#EMP Brothers, sisters — name no master, but a voice for the tribes! A voice to scorn [threat.GetTitledFirstNameNoTooltip], and all the world!#!"
 
-
  mpo_greatest_of_khans.0002.b_league: "Only together can we rulers resist [genghis_khan.GetFirstNameNoTooltip]."
 
  mpo_decisions_events.0005.desc_new_culture: "\n\nWith this new realm also comes a new identity, to solidify our position. From now on, we are known as the [new_culture.GetCollectiveNoun]. May the world know our might!"
  mpo_decisions_events.0004.desc_new_culture: "\n\nWith this new realm also comes a new identity for some. While I may not follow this new identity, some are referring to themselves as the [new_culture.GetCollectiveNoun]."
 
 ## Game Rules
- rule_CL_historical_names: "C&L Historical Names (NOTE: Not many so far)"
+ game_rule_category_confed_league: "Confederations & Leagues"
+
+ rule_CL_historical_names: "C&L: Historical Names (NOTE: Not many so far)"
  setting_CL_historical_names_all: "All"
  setting_CL_historical_names_all_desc: "Under certain conditions, a [confederation|E] or [league|E] may get a historical name, even anachronistic ones. Historical names can only appear once each."
  setting_CL_historical_names_none: "None"
@@ -95,15 +105,23 @@
  setting_CL_historical_names_during_ck3: "During CK3 Time Period"
  setting_CL_historical_names_during_ck3_desc: "Under certain conditions, a [confederation|E] or [league|E] may only get a historical name that appeared during the time period of CK3. Historical names can only appear once each."
 
+ rule_CL_allow_kingdoms: "C&L: Allow Kingdoms"
+ setting_CL_allow_kingdoms_off: "No"
+ setting_CL_allow_kingdoms_off_desc: "[kingdoms|E] are NOT allowed to join a [confederation|E] or [league|E]."
+ setting_CL_allow_kingdoms_on: "Yes"
+ setting_CL_allow_kingdoms_on_desc: "[kingdoms|E] ARE allowed to join a [confederation|E] or [league|E], regardless of size."
+ setting_CL_allow_kingdoms_limited: "Limited"
+ setting_CL_allow_kingdoms_limited_desc: "[kingdoms|E] ARE allowed to join a [confederation|E] or [league|E], as long as they have a [realm_size|E] of 8 [counties|E] or less."
+ 
 ## Confederation/League Names
-# Anachronistic
+ # Anachronistic
  cl_peloponnesian_league: "Peloponnesian League"
  cl_peloponnesian_league_adj: "Peloponnesian"
  cl_delian_league: "Delian League"
  cl_delian_league_adj: "Delian"
  cl_aetolian_league: "Aetolian League"
  cl_aetolian_league_adj: "Aetolian"
-# CK3 Time Period
+ # CK3 Time Period
  cl_masmuda_confederacy: "Masmuda Confederacy"
  cl_masmuda_confederacy_adj: "Masmudan"
  cl_zenati_confederacy: "Zenata Confederacy"
@@ -116,7 +134,7 @@
  cl_chaoui_confederacy_adj: "Chaoui"
  cl_mozabite_confederacy: "Mozabite Confederacy"
  cl_mozabite_confederacy_adj: "Mozabite"
-# Generic
+ # Generic
  CONFEDERATION_KINGDOM_CULTURE_NAME: "[confederation_culture.GetNameNoTooltip|U] Confederation"
  CONFEDERATION_KINGDOM_CULTURE_NAME_ADJ: "[confederation_culture.GetNameNoTooltip|U]"
  CONFEDERATION_KINGDOM_FAITH_NAME: "[confederation_faith.GetAdjectiveNoTooltip|U] Confederation"

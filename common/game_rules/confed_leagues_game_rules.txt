@@ -1,7 +1,7 @@
 ﻿CL_historical_names = {
 	
 	categories = {
-		historicity flavor
+		historicity flavor confed_league
 	}
 	
 	default = CL_historical_names_all
@@ -11,5 +11,21 @@
 	CL_historical_names_none = {}
 
 	CL_historical_names_during_ck3 = {}
+
+}
+
+CL_allow_kingdoms = {
+	
+	categories = {
+		historicity flavor confed_league
+	}
+	
+	default = CL_allow_kingdoms_off
+
+	CL_allow_kingdoms_off = {}
+
+	CL_allow_kingdoms_limited = {}
+
+	CL_allow_kingdoms_on = {}
 
 }
