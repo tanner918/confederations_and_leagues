@@ -44,3 +44,8 @@ CL_faith_based_confed_league_trigger = {
 		}
 	}
 }
+
+## Checks whether a character has an appropriate title tier to be in a confederation or a league (will need to modify later if/when I decide to allow smaller kingdoms in)
+CL_has_appropriate_title_tier = {
+	highest_held_title_tier < tier_kingdom
+}

@@ -1,0 +1,13 @@
+﻿
+on_game_start = {
+	on_actions = {
+		CL_initial_variables
+	}
+}
+
+# This just sets up a global variable that could be checked by any mod that wants to consider whether this mod is loaded
+CL_initial_variables = {
+	effect = {
+		set_global_variable = confed_league_enabled
+	}
+}
