@@ -21,13 +21,16 @@
  join_league_interaction_desc: "Request membership in [recipient.GetShortUINamePossessiveNoTooltip] [league|E]."
  join_league_neighboring_foe_tt: "A nearby [ruler|E] threatens the [league|E]: $VALUE|=+0$"
  CL_has_valid_government_tt: "Has valid [government|E] for [confederation|E] or [league|E]"
- CL_allow_kingdoms_limited_trigger_tt: "Must be either:\n $EFFECT_LIST_BULLET$ A [count|E] or [duke|E]\n $EFFECT_LIST_BULLET$ A [king|E] with a [realm_size|E] of 8 or less"
+ CL_allow_kingdoms_limited_trigger_tt: "Must be either:\n $EFFECT_LIST_BULLET$ A [count|E] or [duke|E]\n $EFFECT_LIST_BULLET$ A [king|E] with a [realm_size|E] of [EmptyScope.ScriptValue('CL_limited_kingdom_membership_realm_size')] or less"
 
 ## Decisions
  call_for_league_decision: "Call for Defensive League"
  call_for_league_decision_tooltip: "Begin inviting other [rulers|E] into a [league|E]"
  enables_offer_league_tt: "Enables the #high $offer_league_interaction$#! [character_interaction|E]"
- offer_league_members_tt: "May be used on [independent|E] [duke|E] or [count|E]-[rank|E] [rulers|E] to add them to a shared [league|E]"
+ offer_league_members_tt: "May be used on [independent|E] [EmptyScope.Custom('CLGetValidTitleRanks')] [rulers|E] to add them to a shared [league|E]"
+ CL_valid_titles_no_kings: "[duke|E] or [count|E]-[rank|E]"
+ CL_valid_titles_limited_kings: "[kings|E] with a [realm_size|E] of [EmptyScope.ScriptValue('CL_limited_kingdom_membership_realm_size')] or less, [duke|E], or [count|E]-[rank|E]"
+ CL_valid_titles_all_kings: "[king|E], [duke|E], or [count|E]-[rank|E]"
  league_join_defensive_wars_tt: "[league_members|E] will always join each other's Defensive [wars|E]"
  league_raiding_attacking_tt: "[league_members|E] may not [raid|E] or declare [war|E] on each other"
  offer_league_5_year_warning_tt: "#alert_trial @alert_icon! You have #high 5 years#! to form a [league|E]#!"
@@ -111,8 +114,14 @@
  setting_CL_allow_kingdoms_on: "Yes"
  setting_CL_allow_kingdoms_on_desc: "[kingdoms|E] ARE allowed to join a [confederation|E] or [league|E], regardless of size."
  setting_CL_allow_kingdoms_limited: "Limited"
- setting_CL_allow_kingdoms_limited_desc: "[kingdoms|E] ARE allowed to join a [confederation|E] or [league|E], as long as they have a [realm_size|E] of 8 [counties|E] or less."
+ setting_CL_allow_kingdoms_limited_desc: "[kingdoms|E] ARE allowed to join a [confederation|E] or [league|E], as long as they have a [realm_size|E] of [EmptyScope.ScriptValue('CL_limited_kingdom_membership_realm_size')] [counties|E] or less."
  
+ rule_CL_1178_lombard_league: "C&L: 1178 Lombard League"
+ setting_CL_1178_lombard_league_off: "No"
+ setting_CL_1178_lombard_league_off_desc: "The $cl_lombard_league$ will NOT form at game start in the 1178 bookmarks."
+ setting_CL_1178_lombard_league_on: "Yes"
+ setting_CL_1178_lombard_league_on_desc: "The $cl_lombard_league$ WILL form at game start in the 1178 bookmarks.\n#weak NOTE: There is currently no content related to this at this time outside of having it form at game start. #!"
+
 ## Confederation/League Names
  # Anachronistic
  cl_peloponnesian_league: "Peloponnesian League"
@@ -134,6 +143,8 @@
  cl_chaoui_confederacy_adj: "Chaoui"
  cl_mozabite_confederacy: "Mozabite Confederacy"
  cl_mozabite_confederacy_adj: "Mozabite"
+ cl_lombard_league: "Lombard League"
+ cl_lombard_league_adj: "Lombard"
  # Generic
  CONFEDERATION_KINGDOM_CULTURE_NAME: "[confederation_culture.GetNameNoTooltip|U] Confederation"
  CONFEDERATION_KINGDOM_CULTURE_NAME_ADJ: "[confederation_culture.GetNameNoTooltip|U]"

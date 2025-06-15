@@ -29,3 +29,17 @@ CL_allow_kingdoms = {
 	CL_allow_kingdoms_on = {}
 
 }
+
+CL_1178_lombard_league = {
+	
+	categories = {
+		historicity flavor confed_league
+	}
+	
+	default = CL_1178_lombard_league_on
+
+	CL_1178_lombard_league_on = {}
+
+	CL_1178_lombard_league_off = {}
+
+}

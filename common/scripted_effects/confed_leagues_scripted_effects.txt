@@ -136,6 +136,20 @@ CL_determine_elevated_title_name = {
 						}
 					}
 				}
+				flag:cl_lombard_league = {
+					create_dynamic_title = {
+						tier = $TITLE_TIER$
+						name = cl_lombard_league
+						adj = cl_lombard_league_adj
+						pre = article_CONFEDERATION_CULTURE_NAME
+					}
+					scope:new_title = {
+						set_variable = {
+							name = historical_confed_league
+							value = flag:cl_lombard_league
+						}
+					}
+				}
 			}
 		}
 

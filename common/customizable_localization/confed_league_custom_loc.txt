@@ -1,0 +1,19 @@
+﻿CLGetValidTitleRanks = {
+	type = all
+	
+	text = {
+		trigger = { has_game_rule = CL_allow_kingdoms_off }
+		localization_key = CL_valid_titles_no_kings
+	}
+
+	text = {
+		trigger = { has_game_rule = CL_allow_kingdoms_limited }
+		localization_key = CL_valid_titles_limited_kings
+	}
+
+	text = {
+		trigger = { has_game_rule = CL_allow_kingdoms_on }
+		localization_key = CL_valid_titles_all_kings
+	}
+}
+

@@ -1,7 +1,24 @@
-﻿
-on_game_start = {
+﻿on_game_start = {
 	on_actions = {
 		CL_initial_variables
+	}
+}
+
+on_game_start_after_lobby = {
+	on_actions = {
+		CL_1178_lombard_league
+	}
+}
+
+on_title_gain = {
+	on_actions = {
+		CL_check_realm_size
+	}
+}
+
+on_vassal_gained = {
+	on_actions = {
+		CL_check_realm_size
 	}
 }
 
@@ -9,5 +26,74 @@ on_game_start = {
 CL_initial_variables = {
 	effect = {
 		set_global_variable = confed_league_enabled
+	}
+}
+
+# This sets up the Lombard League in the 1178 bookmarks if you have the relevant game rule
+CL_1178_lombard_league = {
+	effect = {
+		if = {
+			limit = {
+				game_start_date = 1178.10.1
+				has_game_rule = CL_1178_lombard_league_on
+			}
+
+			# Referenced the characters by the title they hold so that if the characters are randomized "Random Ruler Placement", then the league can actually form without being spread throughout the entire map
+			title:c_treviso.holder = { # Count of Treviso, character:cisalpine0208
+				# Create Confederacy with Historical Name, and variable to indicate it
+				create_confederation = {
+					name = cl_lombard_league
+				}
+				scope:new_confederation = {
+					set_variable = {
+						name = historical_confed_league
+						value = flag:cl_lombard_league
+					}
+					set_variable = {
+						name = confed_type
+						value = flag:CL_type_league
+					}
+				}
+				add_to_global_variable_list = {
+					name = CL_used_historical_names
+					target = flag:cl_lombard_league
+				}
+			}
+
+			scope:new_confederation = {
+				add_confederation_member = title:c_padua.holder # Count of Padu, character:223597
+				add_confederation_member = title:c_verona.holder # Count of Verona, character:cisalpine0204
+				add_confederation_member = title:c_ferrara.holder # Count of Ferrara, character:cisalpine0153
+				add_confederation_member = title:c_bologna.holder # Count of Bologna, character:asinelli_1
+				add_confederation_member = title:c_modena.holder # Count of Modena, character:cisalpine0158
+				add_confederation_member = title:c_mantua.holder # Count of Mantua, character:bonacolsi_1
+				add_confederation_member = title:c_parma.holder # Count of Parma, character:cisalpine0778
+				add_confederation_member = title:c_cremona.holder # Count of Cremona, character:carpineto_1
+				add_confederation_member = title:c_brescia.holder # Count of Brescia, character:osa_1
+				add_confederation_member = title:c_como.holder # Count of Como, character:259002
+				add_confederation_member = title:c_lombardia.holder # Count of Lombardia, character:213007
+				add_confederation_member = title:c_novara.holder # Count of Novara, character:71264
+				add_confederation_member = title:c_pavia.holder # Count of Pavia, character:beccaria_1
+			}
+		}
+	}
+}
+
+## If you are playing with the game rule that allows kingdoms into confederations/leagues with a limited realm size, then it needs to be checked whenever a title/vassal is gained to determine whether a kingdom is still below that realm size limit
+CL_check_realm_size = {
+	effect = {
+		if = {
+			limit = {
+				top_liege = { # Referencing the top_liege so that if a vassal wins a war and gains land, it is the top_liege's realm that matters, and if the character happens to be the top_liege anyway, this will also scope to them
+					is_confederation_member = yes
+					CL_has_appropriate_title_tier = no
+				} 
+			}
+
+			top_liege = {
+				save_scope_as = CL_top_liege
+				confederation = { remove_confederation_member = scope:CL_top_liege }
+			}
+		}
 	}
 }

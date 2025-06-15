@@ -63,7 +63,9 @@ CL_has_appropriate_title_tier = {
 				highest_held_title_tier < tier_kingdom
 				AND = {
 					highest_held_title_tier = tier_kingdom
-					realm_size <= 8 # Not sure right now what realm size will be best balance-wise, so this will likely need to be changed later on
+					any_realm_county = { # Using realm_size doesn't seem to always work since it doesn't always update properly, hopefully this does work
+						count <= CL_limited_kingdom_membership_realm_size # This value is defined as a script_value so it can easily be changed without needing to edit a bunch of files
+					}
 				}
 			}
 		}

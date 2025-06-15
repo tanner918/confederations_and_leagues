@@ -2,6 +2,8 @@
 CK3 mod adding "Defensive Leagues" for non-Tribal/Nomadic realms through confederation system
 
 TODO:
+- Go through the files again and redo the tooltips/descriptions so that instead of have separate checks for which tooltip should be displayed (i.e. simply showing the word "League" instead of "Confederation"), instead, just try to overwrite the loc keys using customizable_localization, to hopefully maintain better compatibility.
+
 
 "common\character_interactions\09_mpo_interactions.txt"
 - [DONE, TEST] offer_confederation_interaction

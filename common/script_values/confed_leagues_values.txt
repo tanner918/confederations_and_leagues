@@ -1,0 +1,2 @@
+﻿# This will determine the max realm size a kingdom can have and still be allowed in a confederation/league
+CL_limited_kingdom_membership_realm_size = 8
