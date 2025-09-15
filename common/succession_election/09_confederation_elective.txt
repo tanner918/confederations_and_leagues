@@ -56,6 +56,16 @@ confederation_elective = {
 			add = 1
 			is_diarch_of_target = scope:holder
 		}
+		modifier = { #Coronation event
+			desc = tooltip_confederation_vote_strength_coronation
+			add = 1
+			has_character_flag = confederation_politicking_vote 
+		}
+		modifier = { #Coronation event
+			desc = tooltip_confederation_vote_strength_coronation
+			add = 2
+			has_character_flag = confederation_politicking_vote_2
+		}
 		# C&L: Adding a modifier so that if the confederation/league-title is faith-based, if a character ends up being the Head of Faith of the confederation_faith, they get an extra vote, to represent how they are special within that faith.
 		modifier = {
 			desc = tooltip_is_confederation_faith_hof
