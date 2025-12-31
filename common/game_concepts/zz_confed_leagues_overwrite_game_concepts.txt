@@ -1,0 +1,5 @@
+﻿confederation = {
+	texture = "gfx/interface/icons/government_types/confederation_government.dds"
+	parent = federation
+	alias = { confederation_government confederations }
+}

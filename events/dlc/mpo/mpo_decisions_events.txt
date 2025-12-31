@@ -1,5 +1,6 @@
 ﻿# This is the base game file, because apparently you can't just overwrite one thing, you have to do the entire file
 # All changes I make here will be noted with comments started by: C&L
+# Up-to-date as of CK3 1.18.2
 
 ###################################################
 ##	MPO Decision Events
@@ -43,9 +44,7 @@ mpo_decisions_events.0001 = {
 	title = { # C&L: Made title change depending on what government you have
 		first_valid = {
 			triggered_desc = {
-				trigger = {
-					CL_uses_leagues = yes
-				}
+				trigger = { scope:new_CL_type ?= flag:defensive_league }
 				desc = mpo_decisions_events.0001.t_league
 			}
 			desc = mpo_decisions_events.0001.t_confederation
@@ -54,9 +53,7 @@ mpo_decisions_events.0001 = {
 	desc = { # C&L: Made description change depending on what government you have
 		first_valid = {
 			triggered_desc = {
-				trigger = {
-					CL_uses_leagues = yes
-				}
+				trigger = { scope:new_CL_type ?= flag:defensive_league }
 				desc = mpo_decisions_events.0001.desc_league
 			}
 			desc = mpo_decisions_events.0001.desc_confederation
@@ -219,7 +216,7 @@ mpo_decisions_events.0001 = {
 		name = mpo_decisions_events.0001.a
 
 		if = { # C&L: Made tooltips shown reflect whether you will be forming a League or Confederation
-			limit = { CL_uses_leagues = yes }
+			limit = { scope:new_CL_type ?= flag:defensive_league }
 			custom_tooltip = enables_offer_league_tt
 			custom_tooltip = offer_league_members_tt
 			custom_tooltip = offer_league_5_year_warning_tt
@@ -256,23 +253,7 @@ mpo_decisions_events.0002 = {
 	title = { # C&L: Made title change depending on whether you were in a Confederation or Defensive League
 		first_valid = {
 			triggered_desc = {
-				trigger = {
-					OR = {
-						AND = { # C&L: For if you were in a League and it remains
-							scope:other_confederate = {
-								is_confederation_member = yes
-								confederation = {
-									has_variable = confed_type
-									var:confed_type = flag:CL_type_league
-								}
-							}
-						}
-						AND = { # C&L: For when you leaving disbanded the league, and it seems like you were likely in a League
-							scope:other_confederate = { is_confederation_member = no }
-							CL_uses_leagues = yes
-						}
-					}
-				}
+				trigger = { scope:old_CL_type ?= flag:defensive_league }
 				desc = mpo_decisions_events.0002.t_league
 			}
 			desc = mpo_decisions_events.0002.t # C&L: Fallsback to assuming you were in a Confederation
@@ -283,6 +264,7 @@ mpo_decisions_events.0002 = {
 		first_valid = {
 			triggered_desc = {
 				trigger = {
+					scope:old_CL_type ?= flag:confederation # C&L: Checking if what you are leaving is a confederation
 					exists = scope:confederation
 					scope:confederation = {
 						any_confederation_member = {
@@ -290,18 +272,6 @@ mpo_decisions_events.0002 = {
 							NOT = {
 								this = root
 							}
-						}
-					}
-					OR = { # C&L: Tries to make sure you were in a confederation
-						scope:confederation = {
-							has_variable = confed_type
-							var:confed_type = flag:CL_type_confederation
-						}
-						AND = {
-							scope:confederation = {
-								NOT = { has_variable = confed_type }
-							}
-							CL_uses_confederations = yes	
 						}
 					}
 				}
@@ -309,6 +279,7 @@ mpo_decisions_events.0002 = {
 			}
 			triggered_desc = { # C&L: Added this option in case you were in a Defensive League and it remains
 				trigger = {
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
 					exists = scope:confederation
 					scope:confederation = {
 						any_confederation_member = {
@@ -316,18 +287,6 @@ mpo_decisions_events.0002 = {
 							NOT = {
 								this = root
 							}
-						}
-					}
-					OR = { # C&L: Tries to make sure you were in a league
-						scope:confederation = {
-							has_variable = confed_type
-							var:confed_type = flag:CL_type_league
-						}
-						AND = {
-							scope:confederation = {
-								NOT = { has_variable = confed_type }
-							}
-							CL_uses_leagues = yes	
 						}
 					}
 				}
@@ -336,7 +295,7 @@ mpo_decisions_events.0002 = {
 			triggered_desc = { # C&L: Added this option in case you were in a Defensive League and it disbanded
 				trigger = {
 					scope:other_confederate = { is_confederation_member = no }
-					CL_uses_leagues = yes
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
 				}
 				desc = mpo_decisions_events.0002.desc_league_done
 			}
@@ -414,19 +373,7 @@ mpo_decisions_events.0003 = {
 		first_valid = {
 			triggered_desc = {
 				trigger = {
-					OR = {
-						AND = { # C&L: For if you are still in a confederation, and it was a League
-							is_confederation_member = yes
-							confederation = {
-								has_variable = confed_type
-								var:confed_type = flag:CL_type_league
-							}
-						}
-						AND = { # C&L: For when your League was destroyed by the other member leaving, this indicates you were most likely in a League
-							is_confederation_member = no
-							CL_uses_leagues = yes
-						}
-					}
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
 				}
 				desc = mpo_decisions_events.0003.t_league
 			}
@@ -437,19 +384,7 @@ mpo_decisions_events.0003 = {
 		first_valid = { # C&L: Changed main event description paragraph to change depending on whether you'd be in a League or Confederation
 			triggered_desc = {
 				trigger = {
-					OR = {
-						AND = { # C&L: For if you are still in a confederation, and it was a League
-							is_confederation_member = yes
-							confederation = {
-								has_variable = confed_type
-								var:confed_type = flag:CL_type_league
-							}
-						}
-						AND = { # C&L: For when your League was destroyed by the other member leaving, this indicates you were most likely in a League
-							is_confederation_member = no
-							CL_uses_leagues = yes
-						}
-					}
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
 				}
 				desc = mpo_decisions_events.0003.desc_league
 			}
@@ -465,7 +400,7 @@ mpo_decisions_events.0003 = {
 			triggered_desc = { # C&L: Added this option incase you were likely in a League and it got disbanded
 				trigger = {
 					is_confederation_member = no
-					CL_uses_leagues = yes
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
 				}
 				desc = mpo_decisions_events.0003.desc_league_done
 			}
@@ -491,7 +426,7 @@ mpo_decisions_events.0003 = {
 		}
 		else_if = { # C&L: Added this option to show that it was likely a Defensive League that was destroyed
 			limit = {
-				CL_uses_leagues = yes
+				scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
 			}
 			custom_tooltip = leaver_destroyed_league_tt
 		}
@@ -524,7 +459,7 @@ mpo_decisions_events.0004 = {
 				exists = scope:new_culture
 				NOT = { culture = scope:new_culture }
 			}
-			desc = mpo_decisions_events.0004.desc_new_culture_2
+			desc = mpo_decisions_events.0004.desc_new_culture
 		}
 	}
 	theme = vassal
@@ -724,8 +659,8 @@ scripted_effect mpo_decisions_events_0020_bonuses_tooltips_effect = {
 					scope:heir = { has_trait = lifestyle_physician }
 				}
 				AND = {
-					has_trait = poet
-					scope:heir = { has_trait = poet }
+					has_trait = lifestyle_poet
+					scope:heir = { has_trait = lifestyle_poet }
 				}
 				AND = {
 					has_trait = lifestyle_gardener
@@ -2119,10 +2054,10 @@ mpo_decisions_events.0021 = {
 				}
 				1 = {
 					trigger = {
-						has_trait = poet
-						scope:heir = { has_trait = poet }
+						has_trait = lifestyle_poet
+						scope:heir = { has_trait = lifestyle_poet }
 					}
-					trait:poet = {
+					trait:lifestyle_poet = {
 						save_scope_as = lifestyle_trait
 					}
 				}
@@ -3280,7 +3215,6 @@ mpo_decisions_events.0023 = {
 		}
 	}
 	theme = nomads
-	#TODO_CD_MPO how about a new positive music sting?
 	override_background = { 
 		reference = relaxing_room
 	}
@@ -8150,7 +8084,6 @@ mpo_decisions_events.0300 = {
 					has_domicile_parameter = nomad_yurt_improved_fertility_dance
 				}
 			}
-			custom_tooltip = mpo_decisions_events.0300.a.tt.yurt
 			scope:fertility_county = {
 				every_neighboring_county = {
 					limit = {

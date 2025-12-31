@@ -3,10 +3,6 @@
  offer_league_interaction: "Offer Defensive League"
  offer_league_interaction_desc: "Ask [recipient.GetShortUINameNoTooltip] to join with you in a [league|E]."
  forming_league_tt: "You have not taken the $call_for_league_decision$ [decision|E]"
- recipient_cant_join_leagues_tt: "[recipient.GetShortUINameNoTooltip] can't join a [league|E] because of their [government|E]"
- recipient_cant_join_confederations_tt: "[recipient.GetShortUINameNoTooltip] can't join a [confederation|E] because of their [government|E]"
- actor_cant_join_leagues_tt: "You can't join a [league|E] because of your [government|E]"
- actor_cant_join_confederations_tt: "You can't join a [confederation|E] because of your [government|E]"
  ANOTHER_CULTURE_LEAGUE_REASON: "A [league|E] of [recipient.GetShortUINamePossessiveNoTooltip] [culture|E] exists: $VALUE|=+0$"
  ANOTHER_FAITH_LEAGUE_REASON: "A [league|E] of [recipient.GetShortUINamePossessiveNoTooltip] [faith|E] exists: $VALUE|=+0$"
  ANOTHER_FAITH_CONFEDERATION_REASON: "A [confederation|E] of [recipient.GetShortUINamePossessiveNoTooltip] [faith|E] exists: $VALUE|=+0$"
@@ -19,8 +15,9 @@
  league_restrictions_crown_authority_warning_tt: "#alert_trial @alert_icon! Belonging to a [league|E] restricts your [crown_authority|E] and prevents creating new [titles|E]#!"
  join_league_interaction: "Join Defensive League"
  join_league_interaction_desc: "Request membership in [recipient.GetShortUINamePossessiveNoTooltip] [league|E]."
- join_league_neighboring_foe_tt: "A nearby [ruler|E] threatens the [league|E]: $VALUE|=+0$"
- CL_has_valid_government_tt: "Has valid [government|E] for [confederation|E] or [league|E]"
+ CL_has_valid_confederation_government_tt: "Have a valid [government|E] to join a [confederation|E]"
+ CL_has_valid_league_government_tt: "Have a valid [government|E] to join a [league|E]"
+ CL_has_valid_government_elective_tt: "Have a valid [government|E] for the [confederation|E] or [league|E] #italic (If the title wasn't created from a confederation or defensive league, have a government that can join the same type of confederation/league that the title's current holder can join - i.e. if the title's holder is [feudal|E], you must have a government that can join Defensive Leagues) #!"
  CL_allow_kingdoms_limited_trigger_tt: "Must be either:\n $EFFECT_LIST_BULLET$ A [count|E] or [duke|E]\n $EFFECT_LIST_BULLET$ A [king|E] with a [realm_size|E] of [EmptyScope.ScriptValue('CL_limited_kingdom_membership_realm_size')] or less"
 
 ## Decisions
@@ -47,20 +44,14 @@
  league_kingdom_decision_tooltip: "Disband the [league|E] and form a new [kingdom|E] with the [league_members|E]"
  league_empire_decision_tooltip: "Disband the [league|E] and form a new [empire|E] with the [league_members|E]"
  confederation_empire_decision_tooltip: "Disband the [confederation|E] and form a new [empire|E] with the [confederates|E]"
- league_kingdom_decision_vassal_req: "You are at least #high 5#! [league_members|E]"
- league_empire_decision_vassal_req: "You are at least #high 8#! [league_members|E]"
- confederation_empire_decision_vassal_req: "You are at least #high 8#! [confederates|E]"
- league_kingdom_decision_vassal_opinion_req: "All of the [league_members|E] have at least #P 25#! [opinion|E] of you"
- league_empire_decision_vassal_opinion_req: "All of the [league_members|E] have at least #P 40#! [opinion|E] of you"
- confederation_empire_decision_vassal_opinion_req: "All of the [confederates|E] have at least #P 40#! [opinion|E] of you"
- league_kingdom_decision_vassal_prestige_level_req: "No other [league_member|E] has the same or higher [prestige_i][prestige_level|E]"
- league_kingdom_decision_vassal_wars_req: "There are [league_members|E] at [war|E]"
- league_kingdom_creation_tt: "You get a [kingdom|E]-[title_tier|E] [title|E] and all [league_members|E] become your [vassals|E]\n@alert_icon!#alert_trial The Kingdom will have no [de_jure|E] lands#!"
- league_empire_creation_tt: "You get an [empire|E]-[title_tier|E] [title|E] and all [league_members|E] become your [vassals|E]\n@alert_icon!#alert_trial The Empire will have no [de_jure|E] lands#!"
- confederation_empire_creation_tt: "You get an [empire|E]-[title_tier|E] [title|E] and all [confederates|E] become your [vassals|E]\n@alert_icon!#alert_trial The Empire will have no [de_jure|E] lands#!"
+ confederation_empire_decision_vassal_req: "You have at least #V 8#! members in the [confed_name.GetName|V]"
+ confederation_empire_decision_vassal_opinion_req: "All members of the [confed_name.GetName|V] have at least #P 40#! [opinion|E] of you"
+ confederation_empire_creation_tt: "You get an [empire|E]-[title_tier|E] [title|E] and all members of the [old_confederation.GetName|V] become your [vassals|E]\n@alert_icon!#alert_trial The Empire will have no [de_jure|E] lands#!"
+ confed_league_no_king_members: "#N Your chosen setting for the \"[federation|E] Elevation\" game rule prevents elevation while a [king|E] is in the [confed_name.GetName|V] #!"
 
 ## Concepts
  game_concept_league: "Defensive League"
+ game_concept_leagues: "Defensive Leagues"
  game_concept_league_government: "League Government"
  game_concept_league_desc: "A relation that binds [feudal|E], [clan|E], [republic|E], or [theocratic|E] [rulers|E] in mutual defense, similar to an [alliance|E]. Formed through the #high $call_for_league_decision$#! [decision|E], a defensive league requires its members to join each other's Defensive [wars|E]. Defensive leagues are visible in the Diplomacy tab.\n\nFellow [league_members|E] also may not attack or [raid|E] one another. They are restricted from high levels of [crown_authority|E], and may not create new [titles|E].\n\n[league_members|E] may use the #high $leave_league_decision$#! [decision|E] to become [independent|E]. If a defensive league is left with only one member, it is destroyed."
 
@@ -69,6 +60,7 @@
  game_concept_league_member_desc: "A [ruler|E] who is in a [league|E]. They will automatically join the Defensive [wars|E] of their fellow league members, and are restricted from attacking or [raiding|E] them."
 
  game_concept_federation: "Federation"
+ game_concept_federations: "Federations"
  game_concept_federation_desc: "A Federation is a broader term applying to both [confederations|E] and [leagues|E]."
 
 ## Laws
@@ -91,8 +83,6 @@
  mpo_decisions_events.0001.t_confederation: "Rallying the Tribes"
  mpo_decisions_events.0001.desc_league: "At the whim of [ROOT.Char.GetFaith.HighGodName], my [ROOT.Char.GetPrimaryTitle.GetTierAsName] can be broken like the shaft of a single arrow! For my modest realm shares the land of [home_kingdom.GetNameNoTier] with such warbands as [threat.GetTitledFirstNamePossessive] fearsome [threat.GetCulture.GetCollectiveNoun].\n\nBut — if my people's arrows were bound with those of friends and kin? Could an enemy grip so easily shatter us?\n\n#EMP Brothers, sisters — name no master, but a voice for the people! A voice to scorn [threat.GetTitledFirstNameNoTooltip], and all the world!#!"
  mpo_decisions_events.0001.desc_confederation: "At the whim of [ROOT.Char.GetFaith.HighGodName], my [ROOT.Char.GetPrimaryTitle.GetTierAsName] can be broken like the shaft of a single arrow! For my modest tribe shares the land of [home_kingdom.GetNameNoTier] with such warbands as [threat.GetTitledFirstNamePossessive] fearsome [threat.GetCulture.GetCollectiveNoun].\n\nBut — if my people's arrows were bound with those of friends and kin? Could an enemy grip so easily shatter us?\n\n#EMP Brothers, sisters — name no master, but a voice for the tribes! A voice to scorn [threat.GetTitledFirstNameNoTooltip], and all the world!#!"
-
- mpo_greatest_of_khans.0002.b_league: "Only together can we rulers resist [genghis_khan.GetFirstNameNoTooltip]."
 
  mpo_decisions_events.0005.desc_new_culture: "\n\nWith this new realm also comes a new identity, to solidify our position. From now on, we are known as the [new_culture.GetCollectiveNoun]. May the world know our might!"
  mpo_decisions_events.0004.desc_new_culture: "\n\nWith this new realm also comes a new identity for some. While I may not follow this new identity, some are referring to themselves as the [new_culture.GetCollectiveNoun]."
@@ -121,6 +111,18 @@
  setting_CL_1178_lombard_league_off_desc: "The $cl_lombard_league$ will NOT form at game start in the 1178 bookmarks."
  setting_CL_1178_lombard_league_on: "Yes"
  setting_CL_1178_lombard_league_on_desc: "The $cl_lombard_league$ WILL form at game start in the 1178 bookmarks.\n#weak NOTE: There is currently no content related to this at this time outside of having it form at game start. #!"
+
+ rule_CL_allow_elevation: "C&L: [federation|E] Elevation"
+ setting_CL_allow_elevation_off: "Off"
+ setting_CL_allow_elevation_off_desc: "NO [federation|E] is allowed to elevate themselves into a unified title. #weak This makes the \"Elevate Confederation/Defensive League\" decision unavailable. #!"
+ setting_CL_allow_elevation_all_kingdoms: "All - Kingdoms"
+ setting_CL_allow_elevation_all_kingdoms_desc: "Any [federation|E] can elevate to form a [kingdom|E]-[title_tier|E] [title|E]. #weak This makes the \"Elevate Confederation/Defensive League\" decision unavailable if one of your members is a king. #!"
+ setting_CL_allow_elevation_all_empires: "All - Empires"
+ setting_CL_allow_elevation_all_empires_desc: "Any [federation|E] can elevate to form up to an [empire|E]-[title_tier|E] [title|E]. #weak The \"Elevate Confederation/Defensive League\" decision creates an empire if one of your members is a king, and it will have harder conditions. #!"
+ setting_CL_allow_elevation_only_confederations_kingdoms: "Confederations - Kingdoms"
+ setting_CL_allow_elevation_only_confederations_kingdoms_desc: "Only [confederations|E] can elevate themselves, and they can only form a [kingdom|E]-[title_tier|E] [title|E]. #weak This makes the \"Elevate Confederation\" decision unavailable if one of your members is a king. #!"
+ setting_CL_allow_elevation_only_confederations_empires: "Confederations - Empires"
+ setting_CL_allow_elevation_only_confederations_empires_desc: "Only [confederations|E] can elevate themselves, and they can form up to an [empire|E]-[title_tier|E] [title|E]. #weak The \"Elevate Confederation\" decision will create an empire if one of your members is a king, and it will have harder conditions. #!"
 
 ## Confederation/League Names
  # Anachronistic
@@ -176,3 +178,13 @@
  mozabite_collective_noun: "Mozabites"
  mozabite_prefix: "Mozabo"
 
+## Messages
+ msg_broken_league: "League Member Lost: [left_confederation.GetShortUINameNoTooltip]"
+ msg_broken_league_desc: "[left_confederation.GetUIName] has abandoned your [league|E]"
+ msg_broken_league_root: "Left Defensive League"
+ msg_broken_league_desc_root: "You are no longer a member of the [confederation.GetName]"
+ msg_joined_league: "New League Member: [joiner.GetShortUINameNoTooltip]"
+ msg_joined_league_desc: "[joiner.GetUIName] has joined the [confederation.GetName]"
+
+## Confederation Types
+ confederation_type_defensive_league_type_name: "Defensive League"

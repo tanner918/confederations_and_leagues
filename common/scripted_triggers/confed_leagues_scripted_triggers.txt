@@ -4,7 +4,7 @@ CL_uses_confederations = {
 	OR = {
 		government_has_flag = government_is_nomadic
 		government_has_flag = government_is_tribal
-		has_variable = allowed_in_confederations # This is a variable to be added to a character on the off chance there is a situation where they should be allowed into a confederation, even when they normally wouldn't be allowed to
+		#has_variable = allowed_in_confederations # This is a variable to be added to a character on the off chance there is a situation where they should be allowed into a confederation, even when they normally wouldn't be allowed to
 	}
 }
 
@@ -16,7 +16,7 @@ CL_uses_leagues = {
 		government_has_flag = government_is_clan
 		government_has_flag = government_is_theocracy # Might turn this into a game rule
 		government_has_flag = government_is_republic # Might turn this into a game rule
-		has_variable = allowed_in_leagues # This is a variable to be added to a character on the off chance there is a situation where they should be allowed into a defensive league, even when they normally wouldn't be allowed to
+		#has_variable = allowed_in_leagues # This is a variable to be added to a character on the off chance there is a situation where they should be allowed into a defensive league, even when they normally wouldn't be allowed to
 
 		# Below should let admin realms use leagues. But, given how admin realms work, with characters constantly switching between being landed/unlanded, I will likely not allow them in to prevent any issues. They also are less likely to ever be in a position where joining a defensive league would be necessary.
 		# AND = {
@@ -31,7 +31,6 @@ CL_uses_leagues = {
 # AVAILABLE INPUTS:
 # scope:actor = Character who invited another ruler to join a confederation through the offer_confederation_interaction
 # scope:recipient = Character who received and accepted the invite to join a confederation
-
 CL_faith_based_confed_league_trigger = {
 	# Not sure if these are going to be the best conditions, but wanted to come up with something. Will likely be changed.
 	faith = {
@@ -39,7 +38,7 @@ CL_faith_based_confed_league_trigger = {
 			has_doctrine = doctrine_pluralism_fundamentalist
 			has_doctrine = tenet_communal_identity
 		}
-		NOT = { # Faith can't have any of these
+		NOR = { # Faith can't have any of these
 			has_doctrine = doctrine_pluralism_pluralistic
 		}
 	}
@@ -70,4 +69,65 @@ CL_has_appropriate_title_tier = {
 			}
 		}
 	}
+}
+
+## Checks that the ruler has the appropriate realm laws to be in a confederation/defensive league
+CL_has_appropriate_realm_laws = {
+	trigger_if = {
+		limit = {
+			realm_law_use_nomadic_authority = yes
+		}
+		OR = {
+			has_realm_law = nomadic_authority_1
+			has_realm_law = nomadic_authority_2
+		}
+	}
+	trigger_else_if = {
+		limit = {
+			realm_law_use_tribal_authority = yes
+		}
+		OR = {
+			has_realm_law = tribal_authority_0
+			has_realm_law = tribal_authority_1
+			has_realm_law = tribal_authority_2
+		}
+	}
+	trigger_else_if = {
+		limit = {
+			realm_law_use_crown_authority = yes
+		}
+		OR = {
+			has_realm_law = crown_authority_0
+			has_realm_law = crown_authority_1
+			has_realm_law = crown_authority_2
+		}
+	}
+}
+
+## Checks if a character is actually allowed to enter a defensive league
+valid_defensive_league_member_trigger = {
+	is_playable_character = yes
+	is_tributary = no
+	is_landed = yes
+	is_independent_ruler = yes
+	is_alive = yes
+	NOR = {
+		has_trait = conqueror
+		has_trait = greatest_of_khans
+		is_at_war_with = $CHARACTER$
+		is_at_war_with = $CHARACTER$.top_liege
+		custom_tooltip = {
+			text = no_raiding_hostility_tt
+			$CHARACTER$ = {
+				is_causing_raid_hostility_towards = prev
+			}
+		}
+	}
+	CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead change depending on what game rule the player has set
+	CL_has_appropriate_realm_laws = yes
+	custom_tooltip = {
+		CL_uses_leagues = yes
+		text = CL_has_valid_league_government_tt
+	}
+	is_confederation_member = no
 }

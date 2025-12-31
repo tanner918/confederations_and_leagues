@@ -2,49 +2,29 @@
 ## From dlc_decisions\mpo\mpo_decisions.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
+# Up-to-date as of CK3 1.18.2
 
 call_for_confederation_decision = {
 	picture = {
 		reference = "gfx/interface/illustrations/decisions/mpo_decision_confederation.dds"
 	}
 	decision_group_type = major
-	ai_check_interval = 8
-
-	# C&L: Made name change depending on which government you have, which determines whether you can form a "League" or a "Confederation"
-	title = {
-		first_valid = {
-			triggered_desc = {
-				trigger = {
-					CL_uses_leagues = yes
-				}
-				desc = call_for_league_decision
-			}
-			desc = call_for_confederation_decision
-		}
+	
+	ai_check_interval_by_tier = {
+		barony = 0
+		county = 8
+		duchy = 8
+		kingdom = 8 # C&L: Base game has this as 0, preventing kings from taking this decision
+		empire = 0
+		hegemony = 0
 	}
 
 	desc = call_for_confederation_decision_desc
-
-	# C&L: Made decision tooltip change depending on which government you have, which determines whether you can form a "League" or a "Confederation"
-	selection_tooltip = {
-		first_valid = {
-			triggered_desc = {
-				trigger = {
-					CL_uses_leagues = yes
-				}
-				desc = call_for_league_decision_tooltip
-			}
-			desc = call_for_confederation_decision_tooltip
-		}
-	}
+	selection_tooltip = call_for_confederation_decision_tooltip
 
 	is_shown = {
 		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
-		OR = {
-			# C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments
-			CL_uses_confederations = yes
-			CL_uses_leagues = yes
-		}
+		CL_uses_confederations = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for confederations
 		is_playable_character = yes
 		is_independent_ruler = yes
 		NOR = {
@@ -57,50 +37,28 @@ call_for_confederation_decision = {
 		is_independent_ruler = yes
 		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 		is_tributary = no
-		custom_tooltip = { # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments, and shows proper tooltip
-			OR = {
-				CL_uses_confederations = yes
-				CL_uses_leagues = yes
-			}
-			text = CL_has_valid_government_tt
+		custom_tooltip = { # C&L: Base game just checks if you are Tribal/Nomadic. Need to have a relevant government for creating a confederation
+			CL_uses_confederations = yes
+			text = CL_has_valid_confederation_government_tt
 		}
-		trigger_if = { # C&L: Base game just checks if you have Nomadic government, and fallsback to assuming you are Tribal. I changed it so that it now checks what realm law you use, and makes sure you only have the relevant laws
-			limit = {
-				realm_law_use_nomadic_authority = yes
-			}
-			OR = {
-				has_realm_law = nomadic_authority_1
-				has_realm_law = nomadic_authority_2
-			}
-		}
-		trigger_else_if = {
-			limit = {
-				realm_law_use_tribal_authority = yes
-			}
-			OR = {
-				has_realm_law = tribal_authority_0
-				has_realm_law = tribal_authority_1
-				has_realm_law = tribal_authority_2
-			}
-		}
-		trigger_else_if = {
-			limit = {
-				realm_law_use_crown_authority = yes
-			}
-			OR = {
-				has_realm_law = crown_authority_0
-				has_realm_law = crown_authority_1
-				has_realm_law = crown_authority_2
-			}
-		}
+		CL_has_appropriate_realm_laws = yes # C&L: Base game just checks if you have Nomadic government, and fallsback to assuming you are Tribal. I changed it so that it now checks what realm law you use, and makes sure you only have the relevant laws
 		NOR = {
 			has_trait = conqueror
 			has_trait = greatest_of_khans
 		}
-		OR = {
-			has_trait = diplomat
-			has_trait = family_first
-			confederation_foe_trigger = { CHARACTER = root }
+		trigger_if = {
+			limit = {
+				NOT = {
+					culture = {
+						has_cultural_parameter = forming_confederations_is_easier 
+					}
+				}
+			} #When adjusting, adjust culture_parameter_forming_confederations_is_easier string
+			OR = {
+				has_trait = diplomat
+				has_trait = family_first
+				confederation_foe_trigger = { CHARACTER = root }
+			}
 		}
 		#This is just meant to stop player exploits
 		trigger_if = { # C&L: Made this tooltip change depending on whether you will be in a Defensive League or Confederation
@@ -194,24 +152,11 @@ call_for_confederation_decision = {
 	}
 
 	effect = {
-		# C&L: Made tooltips shown depend on whether you will be forming a "Confederation" or a "League"
-		if = {
-			limit = {
-				CL_uses_leagues = yes
-			}
-			custom_tooltip = enables_offer_league_tt
-			custom_tooltip = offer_league_members_tt
-			custom_tooltip = league_join_defensive_wars_tt
-			custom_tooltip = league_raiding_attacking_tt
-			custom_tooltip = offer_league_5_year_warning_tt
-		}
-		else = {
-			custom_tooltip = enables_offer_confederation_tt
-			custom_tooltip = offer_confederation_members_tt
-			custom_tooltip = confederation_join_defensive_wars_tt
-			custom_tooltip = confederation_raiding_attacking_tt
-			custom_tooltip = offer_confederation_5_year_warning_tt
-		}
+		custom_tooltip = enables_offer_confederation_tt
+		custom_tooltip = offer_confederation_members_tt
+		custom_tooltip = confederation_join_defensive_wars_tt
+		custom_tooltip = confederation_raiding_attacking_tt
+		custom_tooltip = offer_confederation_5_year_warning_tt
 		if = {
 			limit = {
 				government_has_flag = government_is_nomadic
@@ -237,34 +182,26 @@ call_for_confederation_decision = {
 			}
 			custom_tooltip = league_restrictions_crown_authority_warning_tt
 		}
-		# C&L: Base game explains that rulers can leave the confederation after a while. I changed it so that it properly reflects which confederation/league you are going to be in
 		if = {
 			limit = {
-				CL_uses_confederations = yes
+				government_has_flag = government_is_nomadic
 			}
-
-			if = {
-				limit = {
-					government_has_flag = government_is_nomadic
-				}
-				custom_tooltip = confederation_migrating_leaving_warning_tt
-			}
-			else = {
-				custom_tooltip = confederation_leaving_warning_tt
-			}
+			custom_tooltip = confederation_migrating_leaving_warning_tt
 		}
 		else = {
-			custom_tooltip = league_leaving_warning_tt
+			custom_tooltip = confederation_leaving_warning_tt
+		}
+		# C&L: To better reference whether you are trying to form a confederation or league later
+		save_scope_value_as = {
+			name = new_CL_type
+			value = flag:confederation
 		}
 		trigger_event = mpo_decisions_events.0001
 	}
 
 	ai_potential = {
-		OR = {
-			# C&L: Base game checks if AI is Tribal/Nomadic. I changed it to just check if their government can actually join a confederation/league
-			CL_uses_confederations = yes
-			CL_uses_leagues = yes
-		}
+		# C&L: Base game checks if AI is Tribal/Nomadic. I changed it to just check if their government can actually join a confederation
+		CL_uses_confederations = yes
 		is_independent_ruler = yes
 		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 		is_tributary = no
@@ -457,8 +394,8 @@ call_for_confederation_decision = {
 		}
 		#Another confederation of your culture already exists
 		modifier = {
-			any_in_global_list = {
-				variable = confederations
+			any_confederation = {
+                confederation_type = confederation_type:nomadic_confederation # C&L: Added this condition so that it only checks existing "Confederations"
 				has_variable = confederation_culture
 				var:confederation_culture = root.culture
 			}
@@ -467,8 +404,8 @@ call_for_confederation_decision = {
 		# C&L: Adding in the possibility that another confederation/league already exists that is based around your faith (will likely need to add an additional trigger that makes this only apply if their faith is capable of making faith-based leagues, and will likely need to modify how much this, and the above modifier, factors the ai_will_do chance, so that they aren't as harsh)
 		#Another confederation of your faith already exists
 		modifier = {
-			any_in_global_list = {
-				variable = confederations
+			any_confederation = {
+                confederation_type = confederation_type:nomadic_confederation # C&L: Added this condition so that it only checks existing "Confederations"
 				has_variable = confederation_faith
 				var:confederation_faith = root.faith
 			}
@@ -476,13 +413,16 @@ call_for_confederation_decision = {
 		}
 		#There's already another confederation nearby
 		modifier = {
-			any_in_global_list = {
-				variable = confederations
-				any_confederation_member = {
-					in_diplomatic_range = root
-				}
+			any_confederation = {
+                confederation_type = confederation_type:nomadic_confederation # C&L: Added this condition so that it only checks existing "Confederations"
+				is_house_based = no # any_confederation_member is not performant for house blocs
+				any_confederation_member = { in_diplomatic_range = root }
 			}
 			factor = 0.1
+		}
+		modifier = {
+			add = 300
+			culture = { has_cultural_parameter = forming_confederations_is_easier }
 		}
 	}
 }
@@ -491,7 +431,15 @@ leave_confederation_decision = {
 	picture = {
 		reference = "gfx/interface/illustrations/decisions/mpo_decision_confederation.dds"
 	}
-	ai_check_interval = 12
+
+	ai_check_interval_by_tier = {
+		barony = 0
+		county = 12
+		duchy = 12
+		kingdom = 12 # C&L: Base game has this as 0, preventing kings from taking this decision
+		empire = 0
+		hegemony = 0
+	}
 
 	# C&L: Made name change depending on which type of confederation/league you are currently in
 	title = {
@@ -499,8 +447,7 @@ leave_confederation_decision = {
 			triggered_desc = {
 				trigger = {
 					confederation = {
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
+						confederation_type = confederation_type:defensive_league_type
 					}
 				}
 				desc = leave_league_decision
@@ -515,8 +462,7 @@ leave_confederation_decision = {
 			triggered_desc = {
 				trigger = {
 					confederation = {
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
+						confederation_type = confederation_type:defensive_league_type
 					}
 				}
 				desc = leave_league_decision_desc
@@ -531,8 +477,7 @@ leave_confederation_decision = {
 			triggered_desc = {
 				trigger = {
 					confederation = {
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
+						confederation_type = confederation_type:defensive_league_type
 					}
 				}
 				desc = leave_league_decision_tooltip
@@ -542,7 +487,7 @@ leave_confederation_decision = {
 	}
 
 	is_shown = {
-		is_confederation_member = yes
+		confederation ?= { is_house_based = no }
 	}
 
 	is_valid = {
@@ -600,6 +545,20 @@ leave_confederation_decision = {
 	}
 
 	effect = {
+		# C&L: Added this to better reference later whether you are leaving a defensive league or confederation
+		if = {
+			limit = { confederation.confederation_type = confederation_type:defensive_league_type }
+			save_scope_value_as = {
+				name = old_CL_type
+				value = flag:defensive_league
+			}
+		}
+		else = {
+			save_scope_value_as = {
+				name = old_CL_type
+				value = flag:confederation
+			}
+		}
 		set_variable = {
 			name = left_confederation
 			value = root.confederation
@@ -648,8 +607,7 @@ leave_confederation_decision = {
 		if = {
 			limit = {
 				root.confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_league
+					confederation_type = confederation_type:defensive_league_type
 				}
 			}
 			custom_tooltip = league_members_lose_opinion_tt
@@ -849,18 +807,16 @@ leave_confederation_decision = {
 			OR = {
 				AND = {
 					confederation = {
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_confederation
+						confederation_type = confederation_type:nomadic_confederation
 					}
 					NOR = {
 						CL_uses_confederations = yes
-						government_has_flag = government_is_herder # C&L: Base game checks herder here, so I just added it to align with base game
+						government_has_flag = government_is_herder
 					}
 				}
 				AND = {
 					confederation = {
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
+						confederation_type = confederation_type:defensive_league_type
 					}
 					CL_uses_leagues = no
 				}
@@ -1646,7 +1602,7 @@ leave_confederation_decision = {
 			add = 20
 		}
 
-		# C&L: Likely adding faith-based confederations/leagues, so adding this to cover that possibility
+		# C&L: For faith-based confederations/leagues
 		modifier = {
 			confederation = {
 				has_variable = confederation_faith
@@ -1727,7 +1683,6 @@ leave_confederation_decision = {
 			}
 			add = 50
 		}
-		# C&L: As of now, I haven't changed the below domain_size checks. Might make them a little harsher for feudal/clan/etc, to hopefully prevent defensive leagues from getting too powerful. Need to check balancing
 		modifier = {
 			domain_size >= 4
 			add = 15
@@ -1848,7 +1803,15 @@ confederation_kingdom_decision = {
 		reference = "gfx/interface/illustrations/decisions/mpo_decision_confederation.dds"
 	}
 	decision_group_type = major
-	ai_check_interval = 12
+
+	ai_check_interval_by_tier = {
+		barony = 0
+		county = 12
+		duchy = 12
+		kingdom = 12 # C&L: Base game has this as 0, preventing kings from taking this decision
+		empire = 0
+		hegemony = 0
+	}
 
 	# C&L: Made name change depending on whether you are in a "League" or a "Confederation"
 	title = {
@@ -1856,8 +1819,7 @@ confederation_kingdom_decision = {
 			triggered_desc = {
 				trigger = {
 					confederation = {
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
+						confederation_type = confederation_type:defensive_league_type
 					}
 				}
 				desc = league_kingdom_decision
@@ -1872,8 +1834,7 @@ confederation_kingdom_decision = {
 			triggered_desc = {
 				trigger = {
 					confederation = {
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
+						confederation_type = confederation_type:defensive_league_type
 					}
 				}
 				desc = league_kingdom_decision_desc
@@ -1889,8 +1850,7 @@ confederation_kingdom_decision = {
 				trigger = {
 					confederation = {
 						any_confederation_member = { highest_held_title_tier = tier_kingdom }
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
+						confederation_type = confederation_type:defensive_league_type
 					}
 				}
 				desc = league_empire_decision_tooltip
@@ -1899,8 +1859,7 @@ confederation_kingdom_decision = {
 				trigger = {
 					confederation = {
 						any_confederation_member = { highest_held_title_tier = tier_kingdom }
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_confederation
+						confederation_type = confederation_type:nomadic_confederation
 					}
 				}
 				desc = confederation_empire_decision_tooltip
@@ -1908,8 +1867,7 @@ confederation_kingdom_decision = {
 			triggered_desc = {
 				trigger = {
 					confederation = {
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
+						confederation_type = confederation_type:defensive_league_type
 					}
 				}
 				desc = league_kingdom_decision_tooltip
@@ -1920,105 +1878,53 @@ confederation_kingdom_decision = {
 
 	is_shown = {
 		is_confederation_member = yes
+		exists = confederation
 		is_landed = yes
 		is_playable_character = yes
+		NOT = { exists = confederation.leading_house }
+		# C&L: Added conditions that will disable this decision based off the chosen game rules
+		NOR = {
+			has_game_rule = CL_allow_elevation_off
+			AND = {
+				OR = {
+					has_game_rule = CL_allow_elevation_only_confederations_kingdoms
+					has_game_rule = CL_allow_elevation_only_confederations_empires
+				}
+				confederation.confederation_type = confederation_type:defensive_league_type
+			}
+		}
 	}
 
 	is_valid = {
-		prestige_level >= 3 # C&L: Will need to see if this should be changed for elevating a confederation/league with a kingdom-tier member, to make it a little harder, but I already changed some of the other requirements, so not sure if this should also be changed.
+		prestige_level >= 3
 		is_independent_ruler = yes
-		# C&L: Made these tooltips change depending on whether you are in a confederation or a league
-		trigger_if = { # C&L: In a Defensive League, with a kingdom-tier member
+		# C&L: Changed these tooltips to use the confederation/league name to be more universal, and change depending on whether you have a kingdom-tier member
+		confederation = { save_temporary_scope_as = confed_name }
+		trigger_if = { # C&L: Have a kingdom-tier member, but your game rules prevent elevation
 			limit = {
+				OR = {
+					has_game_rule = CL_allow_elevation_only_confederations_kingdoms
+					has_game_rule = CL_allow_elevation_all_kingdoms
+				}
 				confederation = {
 					any_confederation_member = { highest_held_title_tier = tier_kingdom }
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_league
 				}
 			}
 			custom_tooltip = {
-				text = league_empire_decision_vassal_req
-				confederation = {
-					any_confederation_member = {
-						highest_held_title_tier >= tier_county
-						count >= 8
-					}
-				}
-			}
-			custom_tooltip = {
-				text = league_empire_decision_vassal_opinion_req
+				text = confed_league_no_king_members
 				NOT = {
 					confederation = {
 						any_confederation_member = {
-							this != root
-							opinion = {
-								target = root
-								value < 40
-							}
-						}
-					}
-				}
-			}
-			custom_tooltip = {
-				text = league_kingdom_decision_vassal_prestige_level_req
-				NOT = {
-					confederation = {
-						any_confederation_member = {
-							this != root
-							prestige_level >= root.prestige_level
+							highest_held_title_tier >= tier_kingdom
 						}
 					}
 				}
 			}
 		}
-		trigger_else_if = { # C&L: In a Defensive League
-			limit = {
-				confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_league
-				}
-			}
-			custom_tooltip = {
-				text = league_kingdom_decision_vassal_req
-				confederation = {
-					any_confederation_member = {
-						highest_held_title_tier >= tier_county
-						count >= 5
-					}
-				}
-			}
-			custom_tooltip = {
-				text = league_kingdom_decision_vassal_opinion_req
-				NOT = {
-					confederation = {
-						any_confederation_member = {
-							this != root
-							opinion = {
-								target = root
-								value < 25
-							}
-						}
-					}
-				}
-			}
-			custom_tooltip = {
-				text = league_kingdom_decision_vassal_prestige_level_req
-				NOT = {
-					confederation = {
-						any_confederation_member = {
-							this != root
-							prestige_level >= root.prestige_level
-						}
-					}
-				}
-			}
-		}
-		trigger_else_if = { # C&L: In a Confederation, with a kingdom-tier member
+		trigger_else_if = { # C&L: Have a kingdom-tier member
 			limit = {
 				confederation = {
 					any_confederation_member = { highest_held_title_tier = tier_kingdom }
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_confederation
 				}
 			}
 			custom_tooltip = {
@@ -2044,25 +1950,8 @@ confederation_kingdom_decision = {
 					}
 				}
 			}
-			custom_tooltip = {
-				text = confederation_kingdom_decision_vassal_prestige_level_req
-				NOT = {
-					confederation = {
-						any_confederation_member = {
-							this != root
-							prestige_level >= root.prestige_level
-						}
-					}
-				}
-			}
 		}
-		trigger_else_if = { # C&L: In a Confederation
-			limit = {
-				confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_confederation
-				}
-			}
+		trigger_else = { # C&L: No kingdom-tier member
 			custom_tooltip = {
 				text = confederation_kingdom_decision_vassal_req
 				confederation = {
@@ -2086,14 +1975,14 @@ confederation_kingdom_decision = {
 					}
 				}
 			}
-			custom_tooltip = {
-				text = confederation_kingdom_decision_vassal_prestige_level_req
-				NOT = {
-					confederation = {
-						any_confederation_member = {
-							this != root
-							prestige_level >= root.prestige_level
-						}
+		}
+		custom_tooltip = {
+			text = confederation_kingdom_decision_vassal_prestige_level_req
+			NOT = {
+				confederation = {
+					any_confederation_member = {
+						this != root
+						prestige_level >= root.prestige_level
 					}
 				}
 			}
@@ -2105,35 +1994,14 @@ confederation_kingdom_decision = {
 		is_available_adult = yes
 		is_at_war = no
 		is_tributary = no
-		# C&L: Made this tooltip change depending on whether you are in a confederation or a league
-		trigger_if = { # C&L: In a Defensive League
-			limit = {
+		# C&L: Changing the localization of this tooltip to use the confederation/league name to be more universal
+        confederation = { save_temporary_scope_as = confed_name }
+		custom_tooltip = {
+			text = confederation_kingdom_decision_vassal_wars_req
+			NOT = {
 				confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_league
-				}
-			}
-			custom_tooltip = {
-				text = league_kingdom_decision_vassal_wars_req
-				NOT = {
-					confederation = {
-						any_confederation_member = { is_at_war = yes }
-					}
-				}
-			}
-		}
-		trigger_else_if = { # C&L: In a Confederation
-			limit = {
-				confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_confederation
-				}
-			}
-			custom_tooltip = {
-				text = confederation_kingdom_decision_vassal_wars_req
-				NOT = {
-					confederation = {
-						any_confederation_member = { is_at_war = yes }
+					any_confederation_member = {
+						is_at_war = yes
 					}
 				}
 			}
@@ -2160,39 +2028,19 @@ confederation_kingdom_decision = {
 					limit = {
 						government_has_flag = government_is_nomadic
 					}
-					add = medium_herd_value_static
+					add = domicile.medium_herd_value_static
 				}
 			}
 		}
 	}
 
 	effect = {
-		# C&L: Made this tooltip properly reflect whether you were in a confederation or a league
+		# C&L: Changed this tooltip to use the confederation/league name to be more universal, and it changes depending on whether you have a kingdom tier member
+        confederation = { save_scope_as = old_confederation }
 		if = {
 			limit = {
 				confederation = {
 					any_confederation_member = { highest_held_title_tier = tier_kingdom }
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_league
-				}
-			}
-			custom_tooltip = league_empire_creation_tt
-		}
-		else_if = {
-			limit = {
-				confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_league
-				}
-			}
-			custom_tooltip = league_kingdom_creation_tt
-		}
-		else_if = {
-			limit = {
-				confederation = {
-					any_confederation_member = { highest_held_title_tier = tier_kingdom }
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_confederation
 				}
 			}
 			custom_tooltip = confederation_empire_creation_tt
@@ -2207,7 +2055,6 @@ confederation_kingdom_decision = {
 		save_scope_as = new_king_ruler
 		hidden_effect = {
 			confederation = {
-				save_scope_as = old_confederation
 				every_confederation_member = {
 					add_to_list = confederation_vassals
 					every_tributary = {

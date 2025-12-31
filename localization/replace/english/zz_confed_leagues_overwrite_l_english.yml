@@ -7,7 +7,7 @@
  confederation_elective_succession_law_effects: "The [ruler|E] and all direct [vassals|E] can nominate a [title_heir|E] from among themselves and the [close_family|E] of the ruler. [voting_strength|E] is primarily determined by [prestige_level|E], [piety_level|E], and, for [confederation|E]-based kingdoms, the number of [count|E]-[title_tier|E] [vassals|E]."
  confederation_elective_electors_tooltip: "In order to be a valid [elector|E] under [federation|E] Elective, a vassal must fulfill all the following conditions:\n$EFFECT_LIST_BULLET$Be [count|E]-[rank|E] or higher\n$EFFECT_LIST_BULLET$Be a direct [vassal|E] of the [title|E]\n$EFFECT_LIST_BULLET$Has valid [government|E] for the [confederation|E]- or [league|E]-kingdom\n$EFFECT_LIST_BULLET$Not have the [GetTrait('incapable').GetName( GetNullCharacter )] [trait|E]\n$EFFECT_LIST_BULLET$Not be at [war|E] with the [title|E] holder"
 
- ## Character Interactions
+## Character Interactions
  NO_FRIGHTENING_NEIGHBOR_REASON: "Has no neighboring [ruler|E] worth defending against: $VALUE|=+0$"
  TOO_MANY_CONFEDERATION_VASSALS_REASON: "Too many members already: $VALUE|=+0$"
  LEFT_YOUR_CONFEDERATION_REASON: "Recently left [actor.confederation.GetName]: $VALUE|=+0$"
@@ -16,7 +16,24 @@
  join_confederation_neighboring_foe_tt: "A nearby [ruler|E] threatens [recipient.confederation.GetName]: $VALUE|=+0$"
  offer_confederation_members_tt: "May be used on [independent|E] [EmptyScope.Custom('CLGetValidTitleRanks')] [rulers|E] to add them to a shared [confederation|E]"
 
- ## Decisions
+## Decisions
+ confederation_kingdom_creation_tt: "You get a [kingdom|E]-[title_tier|E] [title|E] and all members of the [old_confederation.GetName|V] become your [vassals|E]\n@alert_icon!#alert_trial The Kingdom will have no [de_jure|E] lands#!"
+ confederation_kingdom_decision_vassal_wars_req: "Members of [confed_name.GetName] are at [war|E]"
  confederation_succession_tt: "The new [title|E] gets the [GetLaw('confederation_elective_succession_law').GetName] [succession_law|E]"
  confederation_kingdom_decision_confirm: "With me as its Ruler!"
  mpo_decisions_events.0005.desc: "Once, we were warbands bound by need, our unity as fleeting as the seasons. Now, we stand as one.\n\nThe warriors who rode at my side now kneel before my throne.\n\nLet them sing my name together at my great table — the [new_king_ruler.GetPrimaryTitle.GetTierAsName] is born, and I am its [ROOT.Char.Custom('my_title')]."
+ confederation_kingdom_decision_vassal_req: "You have at least #V 5#! members in the [confed_name.GetName|V]"
+ confederation_kingdom_decision_vassal_opinion_req: "All members of the [confed_name.GetName|V] have at least #P 25#! [opinion|E] of you"
+ confederation_kingdom_decision_vassal_prestige_level_req: "No other member of the [confed_name.GetName|V] has the same or higher [prestige_i][prestige_level|E]"
+
+## Events
+ mpo_greatest_of_khans.0002.b: "Only together can we resist [genghis_khan.GetFirstNameNoTooltip]."
+
+## Confederation Types
+ confederation_type_nomadic_confederation_name: "Confederation"
+
+## GUI (generalizing these localizations for now. Will try making them specify confederation/league later)
+ CONFEDERATION_YOURS_HEADER: "Your [Confederation.GetType.GetNameNoTooltip]"
+ CONFEDERATION_TOOLTIP_MEMBER_OF: "a member of the #high [CONFEDERATION.GetName]#!"
+ CONFEDERATION_TOOLTIP_NUMBER_OF_MEMBERS: "Members: [CONFEDERATION.GetMemberCount|V]"
+ CONFEDERATION_CONCEPT: "[federation|E]"

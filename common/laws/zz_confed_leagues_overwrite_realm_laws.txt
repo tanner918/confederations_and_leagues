@@ -2,6 +2,7 @@
 ## From 00_realm_laws.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
+# Up-to-date as of CK3 1.18.2
 
 @crown_authority_cooldown_years = 20
 @tribal_authority_cooldown_years = 10
@@ -17,6 +18,9 @@
 @camp_purpose_ai_will_do_bonus_t1 = 10
 @camp_purpose_ai_will_do_bonus_t2 = 20
 @camp_purpose_ai_will_do_bonus_t3 = 30
+
+@mandala_decree_piety_cost = 1000
+@mandala_decree_prestige_cost = 500
 
 crown_authority = {
 	default = crown_authority_1
@@ -38,7 +42,7 @@ crown_authority = {
 			trigger_if = {
 				limit = {
 					government_allows = administrative
-					is_independent_ruler = no
+					top_liege != this
 				}
 				liege = { has_realm_law = crown_authority_0 }
 			}
@@ -70,7 +74,7 @@ crown_authority = {
 			trigger_if = {
 				limit = {
 					government_allows = administrative
-					is_independent_ruler = no
+					top_liege != this
 				}
 				liege = { has_realm_law = crown_authority_1 }
 			}
@@ -149,14 +153,12 @@ crown_authority = {
 			trigger_if = {
 				limit = {
 					government_allows = administrative
-					is_independent_ruler = no
+					top_liege != this
 				}
 				liege = { has_realm_law = crown_authority_2 }
 			}
 			# C&L: Added this condition, like how its setup for tribal_authority
-			NOT = {
-				is_confederation_member = yes
-			}
+			NOT = { is_confederation_member = yes }
 		}
 
 		can_pass = {
@@ -165,7 +167,7 @@ crown_authority = {
 					NOT = { has_realm_law = crown_authority_3 }
 					NAND = {
 						government_allows = administrative
-						is_independent_ruler = no
+						top_liege != this
 					}
 				}
 				has_realm_law = crown_authority_1
@@ -235,14 +237,12 @@ crown_authority = {
 			trigger_if = {
 				limit = {
 					government_allows = administrative
-					is_independent_ruler = no
+					top_liege != this
 				}
 				liege = { has_realm_law = crown_authority_3 }
 			}
 			# C&L: Added this condition, like how its setup for tribal_authority
-			NOT = {
-				is_confederation_member = yes
-			}
+			NOT = { is_confederation_member = yes }
 		}
 
 		can_pass = {
@@ -250,7 +250,7 @@ crown_authority = {
 				limit = {
 					NAND = {
 						government_allows = administrative
-						is_independent_ruler = no
+						top_liege != this
 					}
 				}
 				has_realm_law = crown_authority_2

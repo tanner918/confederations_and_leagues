@@ -2,6 +2,7 @@
 ## From mpo_scripted_triggers.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
+# Up-to-date as of CK3 1.18.2
 
 valid_confederation_member_trigger = {
 	is_playable_character = yes
@@ -22,24 +23,10 @@ valid_confederation_member_trigger = {
 		}
 	}
 	CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead change depending on what game rule the player has set
-	trigger_if = {
-		limit = {
-			government_has_flag = government_is_nomadic
-		}
-		custom_tooltip = {
-			text = low_authority_tt
-			OR = {
-				has_realm_law = nomadic_authority_1
-				has_realm_law = nomadic_authority_2
-			}
-		}
-	}
-	custom_tooltip = { # C&L: Base game just checks if you are Nomadic/Tribal, changed it so that it checks you have a valid government for either a confederation or a league
-		OR = {
-			CL_uses_confederations = yes
-			CL_uses_leagues = yes
-		}
-		text = CL_has_valid_government_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed it to better show that more governments can join
+	CL_has_appropriate_realm_laws = yes # C&L: Base game just checks if you are nomadic and have the relevant realm laws, despite them also putting restrictions on tribal realm laws. This checks against all relevant realm laws for each government
+	custom_tooltip = { # C&L: Base game just checks if you are Nomadic/Tribal. Changed it so that it uses the custom scripted trigger in case more governments are allowed in later
+		CL_uses_confederations = yes
+		text = CL_has_valid_confederation_government_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed it to better show that more governments can join
 	}
 	is_confederation_member = no
 }

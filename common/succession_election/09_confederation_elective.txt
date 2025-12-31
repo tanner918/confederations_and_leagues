@@ -1,5 +1,6 @@
 ﻿# C&L: This is the base game file I am replacing, since there is only one thing in the file to replace, no need to create a separate overwrite file.
 # Changes I make will be noted with C&L
+# Up-to-date as of CK3 1.18.2
 
 # The entry should be named in the same way that the elective succession law is named to define it's voter's logic.
 # Root scope - Elector, the character voting in the election.
@@ -125,7 +126,7 @@ confederation_elective = {
 							}
 						}
 					}
-					text = CL_has_valid_government_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
+					text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
 				}
 				NOT = {
 					government_has_flag = government_is_herder
@@ -200,7 +201,7 @@ confederation_elective = {
 							}
 						}
 					}
-					text = CL_has_valid_government_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
+					text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
 				}
 			}
 		}
@@ -248,7 +249,7 @@ confederation_elective = {
 								}
 							}
 						}
-						text = CL_has_valid_government_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
+						text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
 					}
 				}
 			}

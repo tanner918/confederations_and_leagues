@@ -1,5 +1,4 @@
 ﻿CL_historical_names = {
-	
 	categories = {
 		historicity flavor confed_league
 	}
@@ -15,7 +14,6 @@
 }
 
 CL_allow_kingdoms = {
-	
 	categories = {
 		historicity flavor confed_league
 	}
@@ -30,8 +28,26 @@ CL_allow_kingdoms = {
 
 }
 
-CL_1178_lombard_league = {
+CL_allow_elevation = {
+	categories = {
+		historicity flavor confed_league
+	}
 	
+	default = CL_allow_elevation_all_empires
+
+	CL_allow_elevation_off = {}
+
+	CL_allow_elevation_all_kingdoms = {}
+
+	CL_allow_elevation_all_empires = {}
+
+	CL_allow_elevation_only_confederations_kingdoms = {}
+
+	CL_allow_elevation_only_confederations_empires = {}
+
+}
+
+CL_1178_lombard_league = {
 	categories = {
 		historicity flavor confed_league
 	}

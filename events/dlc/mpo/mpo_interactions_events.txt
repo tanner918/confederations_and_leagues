@@ -1,5 +1,6 @@
 ﻿# This is the base game file, because apparently you can't just overwrite one thing, you have to do the entire file
 # All changes I make here will be noted with comments started by: C&L
+# Up-to-date as of CK3 1.18.2
 
 namespace = mpo_interactions_events
 
@@ -117,10 +118,7 @@ mpo_interactions_events.0002 = {
 		# C&L: Made tooltips shown here properly reflect what type of confederation/league you are now in
 		if = {
 			limit = {
-				confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_league
-				}
+				confederation = { confederation_type = confederation_type:defensive_league_type }
 			}
 			custom_tooltip = league_defensive_wars_tt
 			custom_tooltip = unlock_leave_league_interaction_tt
@@ -199,7 +197,7 @@ mpo_interactions_events.0003 = {
 	}
 }
 
-#Confederation rejection letter event
+#Confderation rejection letter event
 mpo_interactions_events.0004 = {
 	type = letter_event
 	sender = scope:recipient
@@ -1006,8 +1004,6 @@ mpo_interactions_events.0010 = {
 	option = {
 		name = mpo_interactions_events.0010.a
 		break_subject_contract_and_establish_tributary_effect = { SUZERAIN = scope:recipient TRIBUTARY = scope:actor }
-		# TODO CHANGE THE OBLIGATIONS BASED ON THE OPTIONS SENT IN THE INTERACTION
-		# TODO BECOME OBEDIENT TOO IF NEEDED
 	}
 }
 

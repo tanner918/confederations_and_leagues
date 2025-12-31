@@ -8,19 +8,7 @@
 CL_determine_elevated_title_name = {
 	if = { ## Determine kingdom name for a "League"
 		limit = {
-			OR = {
-				scope:old_confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_league
-				}
-				# This is just in case somehow the league wasn't given the confed_type variable
-				AND = {
-					NOT = {
-						scope:old_confederation = { has_variable = confed_type }
-					}
-					scope:confederation_offerer = { CL_uses_leagues = yes }
-				}
-			}
+			scope:old_confederation = { confederation_type = confederation_type:defensive_league_type }
 		}
 
 		if = { # Name League Kingdom based off the culture it was named after
@@ -163,19 +151,7 @@ CL_determine_elevated_title_name = {
 	}
 	else_if = { ## Determine kingdom name for a "Confederation"
 		limit = {
-			OR = {
-				scope:old_confederation = {
-					has_variable = confed_type
-					var:confed_type = flag:CL_type_confederation
-				}
-				# This is just in case somehow the confederation wasn't given the confed_type variable
-				AND = {
-					NOT = {
-						scope:old_confederation = { has_variable = confed_type }
-					}
-					scope:confederation_offerer = { CL_uses_confederations = yes }
-				}
-			}
+			scope:old_confederation = { confederation_type = confederation_type:nomadic_confederation }
 		}
 		
 		if = { # Name Confederation Kingdom based off the culture it was named after
@@ -356,9 +332,7 @@ CL_determine_elevated_title_name = {
 
 CL_determine_name = {
 	if = { # It is a Defensive League being formed
-		limit = {
-			CL_uses_leagues = yes
-		}
+		limit = { scope:new_CL_type ?= flag:defensive_league }
 
 		## With the relevant game rules, allow historical league names to appear
 		# NOTE: Whenever adding a new historical defensive league here, make sure to also add the appropriate entry in the above CL_determine_elevated_title_name effect
@@ -396,6 +370,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_peloponnesian_league
+				type = confederation_type:defensive_league_type
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -442,6 +417,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_delian_league
+				type = confederation_type:defensive_league_type
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -488,6 +464,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_aetolian_league
+				type = confederation_type:defensive_league_type
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -507,12 +484,10 @@ CL_determine_name = {
 					this = scope:recipient.culture
 				}
 				NOT = {
-					any_in_global_list = {
-						variable = confederations
+					any_confederation = {
+						confederation_type = confederation_type:defensive_league_type
 						has_variable = confederation_culture
 						var:confederation_culture = scope:actor.culture
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
 					}
 				}
 			}
@@ -521,6 +496,7 @@ CL_determine_name = {
 			}
 			create_confederation = {
 				name = LEAGUE_KINGDOM_CULTURE_NAME
+				type = confederation_type:defensive_league_type
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -536,12 +512,10 @@ CL_determine_name = {
 					this = scope:recipient.faith
 				}
 				NOT = {
-					any_in_global_list = {
-						variable = confederations
+					any_confederation = {
+						confederation_type = confederation_type:defensive_league_type
 						has_variable = confederation_faith
 						var:confederation_faith = scope:actor.faith
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_league
 					}
 				}
 				CL_faith_based_confed_league_trigger = yes
@@ -551,6 +525,7 @@ CL_determine_name = {
 			}
 			create_confederation = {
 				name = LEAGUE_KINGDOM_FAITH_NAME
+				type = confederation_type:defensive_league_type
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -601,6 +576,7 @@ CL_determine_name = {
 			}
 			create_confederation = {
 				name = LEAGUE_KINGDOM_DUCHY_NAME
+				type = confederation_type:defensive_league_type
 			}
 			# Make sure to save what duchy was used to name the confederation, so that it can be referenced later when naming the elevated kingdom title
 			scope:new_confederation = {
@@ -608,14 +584,6 @@ CL_determine_name = {
 					name = duchy_title_name
 					value = scope:duchy_title_name
 				}
-			}
-		}
-
-		## Make sure to save that this represents a "Defensive League"
-		scope:new_confederation = {
-			set_variable = {
-				name = confed_type
-				value = flag:CL_type_league
 			}
 		}
 	}
@@ -659,6 +627,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_masmuda_confederacy
+				type = confederation_type:nomadic_confederation
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -710,6 +679,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_zenati_confederacy
+				type = confederation_type:nomadic_confederation
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -761,6 +731,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_sanhaja_confederacy
+				type = confederation_type:nomadic_confederation
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -810,6 +781,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_kabyle_confederacy
+				type = confederation_type:nomadic_confederation
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -861,6 +833,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_chaoui_confederacy
+				type = confederation_type:nomadic_confederation
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -910,6 +883,7 @@ CL_determine_name = {
 			# Create Confederacy with Historical Name, and variable to indicate it
 			create_confederation = {
 				name = cl_mozabite_confederacy
+				type = confederation_type:nomadic_confederation
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -929,12 +903,10 @@ CL_determine_name = {
 					this = scope:recipient.culture
 				}
 				NOT = {
-					any_in_global_list = {
-						variable = confederations
+					any_confederation = {
+						confederation_type = confederation_type:nomadic_confederation
 						has_variable = confederation_culture
 						var:confederation_culture = scope:actor.culture
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_confederation
 					}
 				}
 			}
@@ -943,6 +915,7 @@ CL_determine_name = {
 			}
 			create_confederation = {
 				name = CONFEDERATION_KINGDOM_CULTURE_NAME
+				type = confederation_type:nomadic_confederation
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -958,12 +931,10 @@ CL_determine_name = {
 					this = scope:recipient.faith
 				}
 				NOT = {
-					any_in_global_list = {
-						variable = confederations
+					any_confederation = {
+						confederation_type = confederation_type:nomadic_confederation
 						has_variable = confederation_faith
 						var:confederation_faith = scope:actor.faith
-						has_variable = confed_type
-						var:confed_type = flag:CL_type_confederation
 					}
 				}
 				CL_faith_based_confed_league_trigger = yes
@@ -973,6 +944,7 @@ CL_determine_name = {
 			}
 			create_confederation = {
 				name = CONFEDERATION_KINGDOM_FAITH_NAME
+				type = confederation_type:nomadic_confederation
 			}
 			scope:new_confederation = {
 				set_variable = {
@@ -1023,6 +995,7 @@ CL_determine_name = {
 			}
 			create_confederation = {
 				name = CONFEDERATION_KINGDOM_DUCHY_NAME
+				type = confederation_type:nomadic_confederation
 			}
 			# Make sure to save what duchy was used to name the confederation, so that it can be referenced later when naming the elevated kingdom title
 			scope:new_confederation = {
@@ -1032,13 +1005,22 @@ CL_determine_name = {
 				}
 			}
 		}
+	}
+}
 
-		## Make sure to save that this represents a "Confederation"
-		scope:new_confederation = {
-			set_variable = {
-				name = confed_type
-				value = flag:CL_type_confederation
+### This effect mimics the base game's "offer_confederation_accepter_effect" effect in showing some of the effects you might experience when joining a confederation, but is for defensive leagues instead
+offer_defensive_league_accepter_effect = {
+	if = {
+		limit = {
+			scope:actor = {
+				is_confederation_member = no
 			}
 		}
+		custom_tooltip = create_league_recipient_tt
 	}
+	else = {
+		custom_tooltip = join_confederation_recipient_tt
+	}
+	custom_tooltip = league_defensive_wars_tt
+	custom_tooltip = unlock_leave_league_interaction_tt
 }
