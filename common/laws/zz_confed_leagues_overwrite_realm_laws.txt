@@ -2,7 +2,7 @@
 ## From 00_realm_laws.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.18.2
+# Up-to-date as of CK3 1.19.0.4
 
 @crown_authority_cooldown_years = 20
 @tribal_authority_cooldown_years = 10

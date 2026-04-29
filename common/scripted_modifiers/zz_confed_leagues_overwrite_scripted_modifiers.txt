@@ -2,7 +2,7 @@
 ## From 00_elective_successions_scripted_modifiers.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.18.2
+# Up-to-date as of CK3 1.19.0.4
 
 elector_voting_pattern_confederation_modifier = {
 	modifier = {

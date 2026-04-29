@@ -1,6 +1,6 @@
 ﻿# This is the base game file, because apparently you can't just overwrite one thing, you have to do the entire file
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.18.2
+# Up-to-date as of CK3 1.19.0.4
 
 namespace = mpo_interactions_events
 

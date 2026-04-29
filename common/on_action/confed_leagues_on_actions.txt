@@ -35,6 +35,7 @@ CL_historical_confederations_and_league = {
 		# 1178: Lombard League
 		if = {
 			limit = {
+				NOT = { has_global_variable = irtock3_enabled } # This shouldn't have an effect if you are playing a converted IMP-CK3 save game
 				game_start_date = 1178.10.1
 				has_game_rule = CL_1178_lombard_league_on
 			}

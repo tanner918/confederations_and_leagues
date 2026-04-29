@@ -1,6 +1,6 @@
 ﻿# C&L: This is the base game file, since I don't think the content in this file can really be modified without issues.
 # Changes I make are noted with C&L
-# Up-to-date as of CK3 1.18.2
+# Up-to-date as of CK3 1.19.0.4
 
 mpo_yearly_events_nomads = {
 	trigger = {
@@ -130,6 +130,30 @@ mpo_migration_finished = {
 				move_domicile = prev.capital_province
 			}
 		}
+		if = {
+			limit = {
+				has_character_modifier = mpo_migrating_accolade_duke_modifier
+			}
+			remove_character_modifier = mpo_migrating_accolade_duke_modifier
+		}
+		else_if = {
+			limit = {
+				has_character_modifier = mpo_migrating_accolade_king_modifier
+			}
+			remove_character_modifier = mpo_migrating_accolade_king_modifier
+		}
+		else_if = {
+			limit = {
+				has_character_modifier = mpo_migrating_accolade_emperor_modifier
+			}
+			remove_character_modifier = mpo_migrating_accolade_emperor_modifier
+		}
+		if = {
+			limit = {
+				has_variable = nomad_migration_preserve_coronation
+			}
+			remove_variable = nomad_migration_preserve_coronation
+		}
 	}
 }
 
@@ -229,6 +253,12 @@ on_migration_war_end = {
 			trigger_event = {
 				on_action = mpo_migration_finished
 			}
+			if = {
+				limit = {
+					has_variable = nomad_migration_preserve_coronation
+				}
+				remove_variable = nomad_migration_preserve_coronation
+			}
 			every_character_situation = {
 				limit = {
 					any_participant_group = {
@@ -298,7 +328,7 @@ on_kurultai_succession_stable = {
 					list = obedient_kurultai
 					limit = {
 						exists = this
-						NOT = { this = root }
+						this != root
 					}
 					add_opinion = {
 						target = root
@@ -340,7 +370,7 @@ on_kurultai_succession_chaotic = {
 					list = obedient_kurultai
 					limit = {
 						exists = this
-						NOT = { this = root }
+						this != root
 					}
 					add_opinion = {
 						target = root
@@ -593,23 +623,16 @@ on_government_change = {
 					government_is_japanese_trigger = yes
 					exists = house.house_confederation
 				}
-				# C&L: Below this, the base game just checks that you don't have the Nomadic/Tribal government, so it will remove you from the confederation. I changed it to instead check that your confederation has the relevant variable, and that you don't meet the scripted_trigger that indicates you are supposed to use confederations, so it knows to remove you.
-				OR = {
-					AND = {
-						confederation = {
-							has_variable = confed_type
-							var:confed_type = flag:CL_type_confederation
-						}
-						CL_uses_confederations = no
-					}
-					AND = {
-						confederation = {
-							has_variable = confed_type
-							var:confed_type = flag:CL_type_league
-						}
-						CL_uses_leagues = no
-					}
+				# C&L: Below this, the base game just checks that you don't have the Nomadic/Tribal government, so it will remove you from the confederation. I changed it to instead check what confederation type your in, and that you don't meet the scripted_trigger that indicates you are supposed to use confederations, so it knows to remove you.
+				trigger_if = {
+					limit = { confederation.confederation_type = confederation_type:defensive_league_type }
+					CL_uses_leagues = no
 				}
+				trigger_else_if = {
+					limit = { confederation.confederation_type = confederation_type:nomadic_confederation }
+					CL_uses_confederations = no
+				}
+				trigger_else = { always = no }
 			}
 			confederation = {
 				remove_confederation_member = root

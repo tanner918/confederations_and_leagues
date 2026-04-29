@@ -37,3 +37,11 @@
  CONFEDERATION_TOOLTIP_MEMBER_OF: "a member of the #high [CONFEDERATION.GetName]#!"
  CONFEDERATION_TOOLTIP_NUMBER_OF_MEMBERS: "Members: [CONFEDERATION.GetMemberCount|V]"
  CONFEDERATION_CONCEPT: "[federation|E]"
+
+## Modifiers
+ confederate_king_modifier: "First Leader of the Federation"
+ confederate_king_modifier_desc: "This character forged a new realm out of a [federation|E]"
+ confederate_vassal_modifier: "First Vassal of the Federation"
+ confederate_vassal_modifier_desc: "This character was part of a [federation|E] that was elevated into a single realm"
+ confederate_lands_modifier: "Federation Lands"
+ confederate_lands_modifier_desc: "These lands are reaping benefits from a [federation|E] that was elevated into a single realm"

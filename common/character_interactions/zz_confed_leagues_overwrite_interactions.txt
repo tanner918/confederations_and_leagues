@@ -2,7 +2,7 @@
 ## From 09_mpo_interactions.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.18.2
+# Up-to-date as of CK3 1.19.0.4
 
 offer_confederation_interaction = {
 	category = interaction_category_diplomacy
@@ -374,9 +374,7 @@ offer_confederation_interaction = {
 				scope:recipient = {
 					NOT = {
 						any_land_neighboring_realm_with_tributaries_owner = {
-							NOT = {
-								this = scope:actor
-							}
+							this != scope:actor
 						}
 					}
 					NOT = {
@@ -1810,10 +1808,10 @@ join_confederation_interaction = {
 		}
 	}
 
-	# ai_targets = {
-	# 	ai_recipients = neighboring_rulers_including_tributary_borders
-	# }
-	# ai_frequency = 0
+	#ai_targets = {
+	#	ai_recipients = neighboring_rulers_including_tributary_borders
+	#}
+	#ai_frequency = 0
 	popup_on_receive = yes
 	pause_on_receive = yes
 
@@ -2919,12 +2917,12 @@ join_confederation_interaction = {
 		}
 	}
 
-	# ai_potential = {
-	# 	#AI rely on the offer interaction, not this one
-	# 	always = no
-	# }
-
-	# ai_will_do = {
-	# 	base = 0
-	# }
+	#ai_potential = {
+	#	#AI rely on the offer interaction, not this one
+	#	always = no
+	#}
+	#
+	#ai_will_do = {
+	#	base = 0
+	#}
 }
