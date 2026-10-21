@@ -1,5 +1,5 @@
 ﻿confederation = {
 	texture = "gfx/interface/icons/government_types/confederation_government.dds"
-	parent = federation
+	parent = federation # C&L made the new "federation" concept be its parent
 	alias = { confederation_government confederations }
 }

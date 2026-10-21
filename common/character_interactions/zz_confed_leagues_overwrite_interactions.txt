@@ -2,7 +2,7 @@
 ## From 09_mpo_interactions.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.19.0.4
+# Up-to-date as of CK3 1.20.1.1
 
 offer_confederation_interaction = {
 	category = interaction_category_diplomacy
@@ -28,16 +28,29 @@ offer_confederation_interaction = {
 
 	cooldown_against_recipient = { years = 3 }
 
-	is_shown = {
-		scope:actor = {
-			# C&L: Base game checks if the actor is tribal or nomadic. Changed to check if you have a valid government for Confederations
-			CL_uses_confederations = yes
-			is_playable_character = yes
+	is_available = {
+		# C&L: Base game checks if the actor is tribal or nomadic. Changed to check if you have a valid government for Confederations
+		CL_uses_confederations = yes
+		trigger_if = {
+			limit = { is_ai = yes }
 			OR = {
-				is_independent_ruler = yes
-				confederation ?= { is_house_based = no }
+				is_confederation_member = yes
+				AND = {
+					has_character_flag = forming_confederation
+					CL_has_appropriate_title_tier = yes
+					is_independent_ruler = yes
+				}
 			}
+			age >= 6
 		}
+		is_playable_character = yes
+		OR = {
+			is_independent_ruler = yes
+			confederation ?= { is_house_based = no }
+		}
+	}
+
+	is_shown = {
 		scope:recipient = {
 			is_playable_character = yes
 			is_independent_ruler = yes
@@ -182,9 +195,8 @@ offer_confederation_interaction = {
 				scope:recipient = {
 					NOR = { #Of two different faiths AND the potential vassal's faith is not pluralistic.
 						faith = scope:actor.faith
-						faith = { has_doctrine = doctrine_pluralism_pluralistic }
-						government_has_flag = government_is_nomadic
-						government_has_flag = government_is_herder
+						rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
+						government_has_flag = government_is_in_steppe
 					}
 				}
 			}
@@ -221,11 +233,10 @@ offer_confederation_interaction = {
 				scope:recipient = {
 					NOR = {
 						faith = scope:actor.faith
-						scope:actor.faith = { has_doctrine = doctrine_pluralism_pluralistic }
-						government_has_flag = government_is_nomadic
-						government_has_flag = government_is_herder
+						scope:actor.rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
+						government_has_flag = government_is_in_steppe
 					}
-					faith = { has_doctrine = doctrine_pluralism_pluralistic }
+					rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
 				}
 			}
 			add = {
@@ -261,11 +272,10 @@ offer_confederation_interaction = {
 				scope:recipient = {
 					NOR = {
 						faith = scope:actor.faith
-						government_has_flag = government_is_nomadic
-						government_has_flag = government_is_herder
+						government_has_flag = government_is_in_steppe
 					}
-					scope:actor.faith = { has_doctrine = doctrine_pluralism_pluralistic }
-					faith = { has_doctrine = doctrine_pluralism_pluralistic }
+					scope:actor.rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
+					rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
 				}
 			}
 			add = {
@@ -411,7 +421,7 @@ offer_confederation_interaction = {
 						}
 					}
 				}
-				scope:recipient.capital_province = { squared_distance = { target = scope:actor.capital_province value < 100000 } }
+				scope:recipient.capital_province = { squared_distance = { target = scope:actor.capital_province value < 150000 } }
 			}
 			add = -25
 		}
@@ -440,7 +450,16 @@ offer_confederation_interaction = {
 						}
 					}
 				}
-				scope:recipient.capital_province = { squared_distance = { target = scope:actor.capital_province value >= 100000 } }
+				scope:recipient.capital_province = {
+					squared_distance = {
+						target = scope:actor.capital_province
+						value >= 150000
+					}
+					squared_distance = {
+						target = scope:actor.capital_province
+						value < 300000
+					}
+				}
 			}
 			add = -100
 		}
@@ -469,9 +488,9 @@ offer_confederation_interaction = {
 						}
 					}
 				}
-				scope:recipient.capital_province = { squared_distance = { target = scope:actor.capital_province value >= 200000 } }
+				scope:recipient.capital_province = { squared_distance = { target = scope:actor.capital_province value >= 300000 } }
 			}
-			add = -175
+			add = -200
 		}
 		#Relative power
 		modifier = {
@@ -707,7 +726,7 @@ offer_confederation_interaction = {
 						AND = {
 							has_trait = bastard
 							scope:recipient = {
-								faith = { NOT = { has_doctrine = doctrine_bastardry_none } }
+								rite = { NOT = { rite_has_doctrine = doctrine_bastardry_none } }
 							}
 						}
 						has_trait = denounced
@@ -1065,19 +1084,12 @@ offer_confederation_interaction = {
 		modifier = {
 			add = -100
 			desc = ANOTHER_CULTURE_CONFEDERATION_REASON
-			NOT = {
-				scope:actor.culture = {
-					this = scope:recipient.culture
-				}
-			}
+			scope:actor.culture != scope:recipient.culture
+			scope:recipient = { CL_uses_confederations = yes }
 			any_confederation = {
 				confederation_type = confederation_type:nomadic_confederation
-				NOT = {
-					this = scope:actor.confederation
-				}
-				has_variable = confederation_culture
-				var:confederation_culture = scope:recipient.culture # C&L: Base game checks the actor's culture here instead of the recipient, fixed that
-				scope:recipient = { CL_uses_confederations = yes }
+				this != scope:actor.confederation
+				var:confederation_culture ?= scope:recipient.culture
 			}
 		}
 
@@ -1086,19 +1098,12 @@ offer_confederation_interaction = {
 		modifier = {
 			add = -100
 			desc = ANOTHER_FAITH_CONFEDERATION_REASON
-			NOT = {
-				scope:actor.faith = {
-					this = scope:recipient.faith
-				}
-			}
+			scope:actor.rite != scope:recipient.rite
+			scope:recipient = { CL_uses_confederations = yes }
 			any_confederation = {
 				confederation_type = confederation_type:nomadic_confederation
-				NOT = {
-					this = scope:actor.confederation
-				}
-				has_variable = confederation_faith
-				var:confederation_faith = scope:recipient.faith
-				scope:recipient = { CL_uses_confederations = yes }
+				this != scope:actor.confederation
+				var:confederation_faith ?= scope:recipient.rite
 			}
 		}
 
@@ -1670,6 +1675,10 @@ offer_confederation_interaction = {
 					}
 				}
 			}
+			if = {
+				limit = { scope:hook = yes }
+				scope:actor = { use_hook = scope:recipient }
+			}
 		}
 	}
 
@@ -1694,20 +1703,6 @@ offer_confederation_interaction = {
 			#letter response
 			trigger_event = mpo_interactions_events.0004
 		}
-	}
-
-	ai_potential = {
-		age >= 6
-		OR = {
-			AND = {
-				is_independent_ruler = yes
-				CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
-				has_character_flag = forming_confederation
-			}
-			is_confederation_member = yes
-		}
-		# C&L: Base game just checks if they are tribal/nomadic. Now checks that they have any relevant government for Confederations
-		CL_uses_confederations = yes
 	}
 
 	ai_will_do = {
@@ -1819,19 +1814,20 @@ join_confederation_interaction = {
 
 	cooldown_against_recipient = { years = 3 }
 
+	is_available = {
+		is_independent_ruler = yes
+		is_landed = yes
+        OR = {
+            # C&L: Base game just checks that the character is Nomadic/Tribal. Changed it to use my scripted_triggers to check across both confederation/league availability
+            CL_uses_confederations = yes
+            CL_uses_leagues = yes
+        }
+        CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
+		is_playable_character = yes
+		is_confederation_member = no
+	}
+
 	is_shown = {
-		scope:actor = {
-			is_playable_character = yes
-			is_independent_ruler = yes
-			OR = {
-				# C&L: Base game just checks that the character is Nomadic/Tribal. Changed it to use my scripted_triggers to check across both confederation/league availability
-				CL_uses_confederations = yes
-				CL_uses_leagues = yes
-			}
-			CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
-			is_landed = yes
-			is_confederation_member = no
-		}
 		scope:recipient.confederation ?= { is_house_based = no }
 	}
 
@@ -1897,9 +1893,8 @@ join_confederation_interaction = {
 				scope:recipient = {
 					NOR = { #Of two different faiths AND the potential vassal's faith is not pluralistic.
 						faith = scope:actor.faith
-						faith = { has_doctrine = doctrine_pluralism_pluralistic }
-						government_has_flag = government_is_nomadic
-						government_has_flag = government_is_herder
+						rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
+						government_has_flag = government_is_in_steppe
 					}
 				}
 			}
@@ -1936,11 +1931,10 @@ join_confederation_interaction = {
 				scope:recipient = {
 					NOR = {
 						faith = scope:actor.faith
-						scope:actor.faith = { has_doctrine = doctrine_pluralism_pluralistic }
-						government_has_flag = government_is_nomadic
-						government_has_flag = government_is_herder
+						scope:actor.rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
+						government_has_flag = government_is_in_steppe
 					}
-					faith = { has_doctrine = doctrine_pluralism_pluralistic }
+					rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
 				}
 			}
 			add = {
@@ -1976,11 +1970,10 @@ join_confederation_interaction = {
 				scope:recipient = {
 					NOR = {
 						faith = scope:actor.faith
-						government_has_flag = government_is_nomadic
-						government_has_flag = government_is_herder
+						government_has_flag = government_is_in_steppe
 					}
-					scope:actor.faith = { has_doctrine = doctrine_pluralism_pluralistic }
-					faith = { has_doctrine = doctrine_pluralism_pluralistic }
+					scope:actor.rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
+					rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
 				}
 			}
 			add = {
@@ -2367,7 +2360,7 @@ join_confederation_interaction = {
 						AND = {
 							has_trait = bastard
 							scope:recipient = {
-								faith = { NOT = { has_doctrine = doctrine_bastardry_none } }
+								rite = { NOT = { rite_has_doctrine = doctrine_bastardry_none } }
 							}
 						}
 						has_trait = denounced

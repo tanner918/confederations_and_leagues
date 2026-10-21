@@ -1,6 +1,6 @@
 ﻿# C&L: This is the base game file I am replacing, since there is only one thing in the file to replace, no need to create a separate overwrite file.
 # Changes I make will be noted with C&L
-# Up-to-date as of CK3 1.19.0.4
+# Up-to-date as of CK3 1.20.1.1
 
 # The entry should be named in the same way that the elective succession law is named to define it's voter's logic.
 # Root scope - Elector, the character voting in the election.
@@ -35,10 +35,8 @@ confederation_elective = {
 					add = 1
 				}
 			}
-			scope:title = { # C&L: Made this modifier only apply if the elevated title represents a "confederation", since it doesn't really match what defensive leagues are supposed to represent
-				has_variable = confed_type
-				var:confed_type = flag:CL_type_confederation
-			}
+			# C&L: Made this modifier only apply if the elevated title represents a "confederation", since it doesn't really match what defensive leagues are supposed to represent
+			scope:title = { var:confed_type ?= flag:CL_type_confederation }
 		}
 		modifier = { #Additional sway from prestige level
 			desc = tooltip_confederation_elective_prestige_levels
@@ -73,7 +71,7 @@ confederation_elective = {
 			add = 1
 			scope:title = {
 				has_variable = confederation_faith
-				var:confederation_faith = {
+				var:confederation_faith.rite_faith = {
 					exists = religious_head
 					religious_head = root
 				}
@@ -83,35 +81,29 @@ confederation_elective = {
 	}
 	
 	electors = {
-		add = holder
-		add = {
-			type = holder_direct_vassals
-			limit = {
-				highest_held_title_tier >= tier_county
-				NOR = {
-					has_trait = incapable
-					is_at_war_with = scope:holder
-				}
-				custom_tooltip = { # C&L: Base game just checks if they are Nomadic/Tribal. Changed it so that only the relevant government types are chosen
-					OR = {
-						AND = { # C&L: Only Tribal/Nomads should vote in Confederation-kingdoms
+		character_sets = {
+			confederation_electors_holder = {
+				type = holder
+			}
+			confederation_electors_direct_vassals = {
+				type = holder_direct_vassals
+				limit = {
+					highest_held_title_tier >= tier_county
+					NOR = {
+						has_trait = incapable
+						is_at_war_with = scope:holder
+					}
+					custom_tooltip = { # C&L: Base game just checks if they are Nomadic/Tribal. Changed it so that only the relevant government types are chosen
+						text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
+						trigger_if = {
+							limit = { scope:title.var:confed_type ?= flag:CL_type_confederation }
 							CL_uses_confederations = yes
-							scope:title = {
-								has_variable = confed_type
-								var:confed_type = flag:CL_type_confederation
-							}
 						}
-						AND = { # C&L: Only Feudal/Clans/Republic/Theocratic should vote in League-kingdoms
+						trigger_else_if = {
+							limit = { scope:title.var:confed_type ?= flag:CL_type_league }
 							CL_uses_leagues = yes
-							scope:title = {
-								has_variable = confed_type
-								var:confed_type = flag:CL_type_league
-							}
 						}
-						AND = { # C&L: Fallback in case the confed_type somehow didn't save
-							scope:title = {
-								NOT = { has_variable = confed_type }
-							}
+						trigger_else = {
 							trigger_if = {
 								limit = {
 									scope:holder = { CL_uses_confederations = yes }
@@ -124,12 +116,12 @@ confederation_elective = {
 								}
 								CL_uses_leagues = yes
 							}
+							trigger_else = { always = no }
 						}
 					}
-					text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
-				}
-				NOT = {
-					government_has_flag = government_is_herder
+					NOT = {
+						government_has_flag = government_is_herder
+					}
 				}
 			}
 		}
@@ -162,31 +154,23 @@ confederation_elective = {
 	
 	#scope:candidate = Candidate, scope:title = Title, scope:holder_candidate = Candidate currently selected by ruler.
 	candidates = {
-		add = {
-			type = holder_direct_vassals	
-			limit = {
-				feudal_elective_potential_landed_candidate_trigger = yes
-				highest_held_title_tier >= tier_county
-				custom_tooltip = { # C&L: Base game just checks if they are Nomadic/Tribal. Changed it so that only the relevant government types are chosen
-					OR = {
-						AND = { # C&L: Only Tribal/Nomads vassals should qualify in Confederation-kingdoms
+		character_sets = {
+			confederation_elective_direct_vassals = {
+				type = holder_direct_vassals
+				limit = {
+					feudal_elective_potential_landed_candidate_trigger = yes
+					highest_held_title_tier >= tier_county
+					custom_tooltip = { # C&L: Base game just checks if they are Nomadic/Tribal. Changed it so that only the relevant government types are chosen
+						text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
+						trigger_if = {
+							limit = { scope:title.var:confed_type ?= flag:CL_type_confederation }
 							CL_uses_confederations = yes
-							scope:title = {
-								has_variable = confed_type
-								var:confed_type = flag:CL_type_confederation
-							}
 						}
-						AND = { # C&L: Only Feudal/Clans/Republic/Theocratic vassals should qualify in League-kingdoms
+						trigger_else_if = {
+							limit = { scope:title.var:confed_type ?= flag:CL_type_league }
 							CL_uses_leagues = yes
-							scope:title = {
-								has_variable = confed_type
-								var:confed_type = flag:CL_type_league
-							}
 						}
-						AND = { # C&L: Fallback in case the confed_type somehow didn't save
-							scope:title = {
-								NOT = { has_variable = confed_type }
-							}
+						trigger_else = {
 							trigger_if = {
 								limit = {
 									scope:holder = { CL_uses_confederations = yes }
@@ -199,42 +183,32 @@ confederation_elective = {
 								}
 								CL_uses_leagues = yes
 							}
+							trigger_else = { always = no }
 						}
 					}
-					text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
 				}
 			}
-		}
-		add = {
-			type = holder_close_or_extended_family
-			limit = {
-				feudal_elective_potential_landless_dynastic_candidate_trigger = yes
-				OR = {
-					is_close_family_of = scope:holder
-					is_grandchild_of = scope:holder
-				}
-				OR = {
-					is_landed = no
-					custom_tooltip = { # C&L: Base game just checks if they are Nomadic/Tribal. Changed it so that only the relevant government types are chosen
-						OR = {
-							AND = { # C&L: Only Tribal/Nomads vassals should qualify in Confederation-kingdoms
+			confederation_elective_family = {
+				type = holder_close_or_extended_family
+				limit = {
+					feudal_elective_potential_landless_dynastic_candidate_trigger = yes
+					OR = {
+						is_close_family_of = scope:holder
+						is_grandchild_of = scope:holder
+					}
+					OR = {
+						is_landed = no
+						custom_tooltip = { # C&L: Base game just checks if they are Nomadic/Tribal. Changed it so that only the relevant government types are chosen
+							text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
+							trigger_if = {
+								limit = { scope:title.var:confed_type ?= flag:CL_type_confederation }
 								CL_uses_confederations = yes
-								scope:title = {
-									has_variable = confed_type
-									var:confed_type = flag:CL_type_confederation
-								}
 							}
-							AND = { # C&L: Only Feudal/Clans/Republic/Theocratic vassals should qualify in League-kingdoms
+							trigger_else_if = {
+								limit = { scope:title.var:confed_type ?= flag:CL_type_league }
 								CL_uses_leagues = yes
-								scope:title = {
-									has_variable = confed_type
-									var:confed_type = flag:CL_type_league
-								}
 							}
-							AND = { # C&L: Fallback in case the confed_type somehow didn't save
-								scope:title = {
-									NOT = { has_variable = confed_type }
-								}
+							trigger_else = {
 								trigger_if = {
 									limit = {
 										scope:holder = { CL_uses_confederations = yes }
@@ -247,12 +221,12 @@ confederation_elective = {
 									}
 									CL_uses_leagues = yes
 								}
+								trigger_else = { always = no }
 							}
 						}
-						text = CL_has_valid_government_elective_tt # C&L: Base game uses is_nomadic_or_tribal_tt. Changed to account for more governments being allowed in now
 					}
+
 				}
-				
 			}
 		}
 	}

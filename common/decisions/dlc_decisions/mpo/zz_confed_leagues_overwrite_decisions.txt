@@ -2,7 +2,7 @@
 ## From dlc_decisions\mpo\mpo_decisions.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.19.0.4
+# Up-to-date as of CK3 1.20.1.1
 
 call_for_confederation_decision = {
 	picture = {
@@ -23,14 +23,14 @@ call_for_confederation_decision = {
 	selection_tooltip = call_for_confederation_decision_tooltip
 
 	is_shown = {
-		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
-		CL_uses_confederations = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for confederations
-		is_playable_character = yes
 		is_independent_ruler = yes
+        CL_uses_confederations = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for confederations
+        CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 		NOR = {
-			has_character_flag = forming_confederation
 			is_confederation_member = yes
+			has_character_flag = forming_confederation
 		}
+		is_playable_character = yes
 	}
 
 	is_valid = {
@@ -61,20 +61,9 @@ call_for_confederation_decision = {
 			}
 		}
 		#This is just meant to stop player exploits
-		trigger_if = { # C&L: Made this tooltip change depending on whether you will be in a Defensive League or Confederation
+		trigger_if = {
 			limit = {
 				is_ai = no
-				CL_uses_leagues = yes
-			}
-			custom_tooltip = {
-				text = recently_took_leave_league_decision_tt
-				NOT = { has_variable = left_confederation }
-			}
-		}
-		trigger_else_if = {
-			limit = {
-				is_ai = no
-				CL_uses_confederations = yes
 			}
 			custom_tooltip = {
 				text = recently_took_leave_confederation_decision_tt
@@ -156,24 +145,7 @@ call_for_confederation_decision = {
 		}
 		custom_tooltip = offer_confederation_5_year_warning_tt
 		# C&L: Base game just checks if you have Nomadic government, and fallsback to assuming you are Tribal. I changed it so that it now checks what realm law you use, and notifies you that that specific realm law will be limited
-		if = {
-			limit = {
-				realm_law_use_nomadic_authority = yes
-			}
-			custom_tooltip = confederation_restrictions_warning_tt
-		}
-		else_if = {
-			limit = {
-				realm_law_use_tribal_authority = yes
-			}
-			custom_tooltip = confederation_restrictions_tribe_warning_tt
-		}
-		else_if = {
-			limit = {
-				realm_law_use_crown_authority = yes
-			}
-			custom_tooltip = league_restrictions_crown_authority_warning_tt
-		}
+		CL_federation_realm_law_title_creation_restriction_tooltip_effect = yes
 		if = {
 			limit = {
 				government_has_flag = government_is_nomadic
@@ -399,7 +371,7 @@ call_for_confederation_decision = {
 			any_confederation = {
                 confederation_type = confederation_type:nomadic_confederation # C&L: Added this condition so that it only checks existing "Confederations"
 				has_variable = confederation_faith
-				var:confederation_faith = root.faith
+				var:confederation_faith = root.rite
 			}
 			factor = 0.05
 		}
@@ -433,27 +405,12 @@ leave_confederation_decision = {
 		hegemony = 0
 	}
 
-	# C&L: Made name change depending on which type of confederation/league you are currently in
-	title = {
-		first_valid = {
-			triggered_desc = {
-				trigger = {
-					confederation = {
-						confederation_type = confederation_type:defensive_league_type
-					}
-				}
-				desc = leave_league_decision
-			}
-			desc = leave_confederation_decision
-		}
-	}
-
 	# C&L: Made description change depending on which type of confederation/league you are currently in
 	desc = {
 		first_valid = {
 			triggered_desc = {
 				trigger = {
-					confederation = {
+					confederation ?= {
 						confederation_type = confederation_type:defensive_league_type
 					}
 				}
@@ -468,7 +425,7 @@ leave_confederation_decision = {
 		first_valid = {
 			triggered_desc = {
 				trigger = {
-					confederation = {
+					confederation ?= {
 						confederation_type = confederation_type:defensive_league_type
 					}
 				}
@@ -506,7 +463,7 @@ leave_confederation_decision = {
 								has_realm_law = nomadic_authority_5
 							}
 						}
-						# C&L: Added this additional check so that this prestige increase only applies to Nomads actually in the Great Steppe
+						# C&L: Added this additional check so that this prestige increase only applies to Nomads actually in the Great Steppe, since that's what it seems to be about
 						any_character_situation = {
 							this = situation:the_great_steppe
 						}
@@ -582,18 +539,7 @@ leave_confederation_decision = {
 				remove_character_modifier = mpo_confederation_member_modifier
 			}
 		}
-		# C&L: Made tooltip shown properly reflect whether you were in a league or confederation
-		if = {
-			limit = {
-				root.confederation = {
-					confederation_type = confederation_type:defensive_league_type
-				}
-			}
-			custom_tooltip = league_members_lose_opinion_tt
-		}
-		else = {
-			custom_tooltip = confederates_lose_opinion_tt
-		}
+		custom_tooltip = confederates_lose_opinion_tt
 		
 		save_scope_as = leaver
 		trigger_event = {
@@ -688,7 +634,7 @@ leave_confederation_decision = {
 						faith = root.faith
 					}
 				}
-				faith = { has_doctrine = doctrine_pluralism_pluralistic }
+				rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
 			}
 			confederation = {
 				any_confederation_member = {
@@ -731,7 +677,7 @@ leave_confederation_decision = {
 					}
 				}
 			}
-			faith = { has_doctrine = doctrine_pluralism_pluralistic }
+			rite = { rite_has_doctrine = doctrine_pluralism_pluralistic }
 			confederation = {
 				any_confederation_member = {
 					save_temporary_scope_as = confederate
@@ -912,12 +858,12 @@ leave_confederation_decision = {
 							}
 						}
 					}
-					any_confederation_member = {
-						NOT = {
-							this = root
-						}
-						capital_province = {
-							squared_distance = { target = root.capital_province value < 100000 }
+					confederation = {
+						any_confederation_member = {
+							this != root
+							capital_province = {
+								squared_distance = { target = root.capital_province value < 100000 }
+							}
 						}
 					}
 				}
@@ -936,12 +882,12 @@ leave_confederation_decision = {
 							}
 						}
 					}
-					any_confederation_member = {
-						NOT = {
-							this = root
-						}
-						capital_province = {
-							squared_distance = { target = root.capital_province value < 200000 }
+					confederation = {
+						any_confederation_member = {
+							this != root
+							capital_province = {
+								squared_distance = { target = root.capital_province value < 200000 }
+							}
 						}
 					}
 				}
@@ -1119,7 +1065,7 @@ leave_confederation_decision = {
 							AND = {
 								has_trait = bastard
 								root = {
-									faith = { NOT = { has_doctrine = doctrine_bastardry_none } }
+									rite = { NOT = { rite_has_doctrine = doctrine_bastardry_none } }
 								}
 							}
 							has_trait = denounced
@@ -1586,7 +1532,7 @@ leave_confederation_decision = {
 			confederation = {
 				has_variable = confederation_faith
 				var:confederation_faith = {
-					this = root.faith
+					this = root.rite
 				}
 			}
 			add = -20
@@ -1595,7 +1541,7 @@ leave_confederation_decision = {
 			confederation = {
 				has_variable = confederation_faith
 				var:confederation_faith = {
-					NOT = { this = root.faith }
+					NOT = { this = root.rite }
 				}
 			}
 			add = 20
@@ -1866,10 +1812,10 @@ confederation_kingdom_decision = {
 
 	is_shown = {
 		is_confederation_member = yes
-		exists = confederation
 		is_landed = yes
-		is_playable_character = yes
 		NOT = { exists = confederation.leading_house }
+		is_playable_character = yes
+		exists = confederation
 		# C&L: Added conditions that will disable this decision based off the chosen game rules
 		NOR = {
 			has_game_rule = CL_allow_elevation_off
@@ -2040,6 +1986,12 @@ confederation_kingdom_decision = {
 		custom_tooltip = confederation_king_modifier_tt
 		custom_tooltip = confederation_vassal_modifier_tt
 		custom_tooltip = confederation_county_modifier_tt
+		if = {
+			limit = {
+				scope:old_confederation = { CL_should_have_confederation_culture_created = yes }
+			}
+			custom_tooltip = cl_new_confederation_culture_tt
+		}
 		save_scope_as = new_king_ruler
 		hidden_effect = {
 			confederation = {
@@ -2166,85 +2118,55 @@ confederation_kingdom_decision = {
 			# C&L: Some historical confederations/leagues should have a new culture created for them
 			if = {
 				limit = {
-					scope:new_title = { has_variable = historical_confed_league }
+					scope:new_title = { CL_should_have_confederation_culture_created = yes }
 				}
 
 				switch = {
 					trigger = scope:new_title.var:historical_confed_league
 
+					# THE FLAGS BEING CHECKED HERE SHOULD MATCH WHATS BEING CHECKED IN THE CL_should_have_confederation_culture_created TRIGGER
 					flag:cl_masmuda_confederacy = {
-						create_divergent_culture = yes
-						scope:new_culture = {
-							set_culture_name = {
-								noun = masmuda_name
-								collective_noun = masmuda_collective_noun
-								prefix = masmuda_prefix
-							}
-						}
+						CL_setup_dynamic_confederation_culture = { CULTURE_NAME = masmuda }
 					}
 					flag:cl_zenati_confederacy = {
-						create_divergent_culture = yes
-						scope:new_culture = {
-							set_culture_name = {
-								noun = zenati_name
-								collective_noun = zenati_collective_noun
-								prefix = zenati_prefix
-							}
-						}
+						CL_setup_dynamic_confederation_culture = { CULTURE_NAME = zenati }
 					}
 					flag:cl_sanhaja_confederacy = {
-						create_divergent_culture = yes
-						scope:new_culture = {
-							set_culture_name = {
-								noun = sanhaja_name
-								collective_noun = sanhaja_collective_noun
-								prefix = sanhaja_prefix
-							}
-						}
+						CL_setup_dynamic_confederation_culture = { CULTURE_NAME = sanhaja }
 					}
 					flag:cl_kabyle_confederacy = {
-						create_divergent_culture = yes
-						scope:new_culture = {
-							set_culture_name = {
-								noun = kabyle_name
-								collective_noun = kabyle_collective_noun
-								prefix = kabyle_prefix
-							}
-						}
+						CL_setup_dynamic_confederation_culture = { CULTURE_NAME = kabyle }
 					}
 					flag:cl_chaoui_confederacy = {
-						create_divergent_culture = yes
-						scope:new_culture = {
-							set_culture_name = {
-								noun = chaoui_name
-								collective_noun = chaoui_collective_noun
-								prefix = chaoui_prefix
-							}
-						}
+						CL_setup_dynamic_confederation_culture = { CULTURE_NAME = chaoui }
 					}
 					flag:cl_mozabite_confederacy = {
-						create_divergent_culture = yes
-						scope:new_culture = {
-							set_culture_name = {
-								noun = mozabite_name
-								collective_noun = mozabite_collective_noun
-								prefix = mozabite_prefix
-							}
-						}
+						CL_setup_dynamic_confederation_culture = { CULTURE_NAME = mozabite }
 					}
 				}
 
 				if = {
 					limit = { exists = scope:new_culture }
 
+					scope:new_title = {
+						set_variable = {
+							name = confederation_culture
+							value = scope:new_culture
+						}
+					}
+
 					every_vassal_or_below = {
 						if = {
 							limit = {
 								culture = { has_same_culture_heritage = root.culture }
 							}
-
+							
+							# C&L: If their capital is off their current culture, convert that as well so the new culture doesn't quickly get wiped out
+							if = {
+								limit = { capital_county.culture ?= culture }
+								capital_county = { set_county_culture = scope:new_culture }
+							}
 							set_culture_same_as = root
-							capital_county = { set_county_culture = scope:new_culture } # C&L: Get some initial conversion so the new culture doesn't just immediately get wiped out
 						}
 
 						every_courtier = {

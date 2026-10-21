@@ -508,21 +508,17 @@ CL_determine_name = {
 		## create faith-based confederation if characters have the same faith and meet certain conditions, and a confederation for the faith hasn't been created yet
 		else_if = {
 			limit = {
-				faith = {	
-					this = scope:recipient.faith
-				}
+				rite = scope:recipient.rite
 				NOT = {
 					any_confederation = {
 						confederation_type = confederation_type:defensive_league_type
 						has_variable = confederation_faith
-						var:confederation_faith = scope:actor.faith
+						var:confederation_faith = scope:actor.rite
 					}
 				}
 				CL_faith_based_confed_league_trigger = yes
 			}
-			faith = {	
-				save_scope_as = confederation_faith
-			}
+			rite = { save_scope_as = confederation_faith }
 			create_confederation = {
 				name = LEAGUE_KINGDOM_FAITH_NAME
 				type = confederation_type:defensive_league_type
@@ -927,21 +923,17 @@ CL_determine_name = {
 		## create faith-based confederation if characters have the same faith and meet certain conditions, and a confederation for the faith hasn't been created yet
 		else_if = {
 			limit = {
-				faith = {	
-					this = scope:recipient.faith
-				}
+				rite = scope:recipient.rite
 				NOT = {
 					any_confederation = {
 						confederation_type = confederation_type:nomadic_confederation
 						has_variable = confederation_faith
-						var:confederation_faith = scope:actor.faith
+						var:confederation_faith = scope:actor.rite
 					}
 				}
 				CL_faith_based_confed_league_trigger = yes
 			}
-			faith = {	
-				save_scope_as = confederation_faith
-			}
+			rite = { save_scope_as = confederation_faith }
 			create_confederation = {
 				name = CONFEDERATION_KINGDOM_FAITH_NAME
 				type = confederation_type:nomadic_confederation
@@ -1023,4 +1015,105 @@ offer_defensive_league_accepter_effect = {
 	}
 	custom_tooltip = league_defensive_wars_tt
 	custom_tooltip = unlock_leave_league_interaction_tt
+}
+
+
+### When joining a federation, your realm laws are restricted and you can't create new titles. This effect is just to simplify the tooltips so they just need to be modified in this one effect instead of in multiple interactions/decisions
+CL_federation_realm_law_title_creation_restriction_tooltip_effect = {
+	if = {
+		limit = { realm_law_use_nomadic_authority = yes }
+		custom_tooltip = confederation_restrictions_warning_tt
+	}
+	else_if = {
+		limit = { realm_law_use_tribal_authority = yes }
+		custom_tooltip = confederation_restrictions_tribe_warning_tt
+	}
+	else_if = {
+		limit = { realm_law_use_crown_authority = yes }
+		custom_tooltip = league_restrictions_crown_authority_warning_tt
+	}
+}
+
+
+### This scripted effect is to help setup new dynamic cultures for when a confederation elevates. It will take the Traditions from the new culture and their old culture and mix them a bit, so the new cultures don't end up with random unrelated traditions, and because the effect to setup divergent cultures often creates very similar cultures.
+## INPUTS:
+# Root Scope - This effect should be called from within the scope of a character getting the new culture
+# $CULTURE_NAME$ - The root localization key for the new culture (i.e. If you want the culture to use the localization name "abc_name", you'd set "CULTURE_NAME = abc" as a parameter when calling this effect). This effect assumes that you'll have the localization keys $CULTURE_NAME$_name, $CULTURE_NAME$_collective_noun, and $CULTURE_NAME$_prefix setup for the given $CULTURE_NAME$
+CL_setup_dynamic_confederation_culture = {
+	# Save old culture info
+	culture = { save_scope_as = old_culture }
+
+	# Create new culture
+	create_divergent_culture_with_side_effects_excluding_cost = yes
+	culture = { save_scope_as = new_culture }
+
+	scope:new_culture = {
+		set_culture_name = {
+			noun = $CULTURE_NAME$_name
+			collective_noun = $CULTURE_NAME$_collective_noun
+			prefix = $CULTURE_NAME$_prefix
+		}
+		# Get a list of all traditions the game gave the new culture
+		every_tradition = {
+			add_to_list = new_culture_traditions
+			scope:new_culture = {
+				add_to_variable_list = {
+					name = new_traditions
+					value = prev
+				}
+			}
+		}
+
+		# Make sure the new culture's traditions are similar to the old culture's, but a little different
+		copy_all_traditions_from = scope:old_culture
+
+		## Remove some old traditions to make room for new traditions
+		if = {
+			limit = {
+				scope:new_culture = {
+					any_tradition = { count >= 4 }
+				}
+			}
+			## If the culture has 4+ traditions, remove 2 traditions
+			while = {
+				count = 2
+				scope:new_culture = {
+					random_tradition = { save_scope_as = removed_tradition }
+					remove_culture_tradition = scope:removed_tradition
+					clear_saved_scope = removed_tradition
+				}
+			}
+		}
+		else = {
+			## Otherwise, remove 1 tradition
+			scope:new_culture = {
+				random_tradition = { save_scope_as = removed_tradition }
+				remove_culture_tradition = scope:removed_tradition
+				clear_saved_scope = removed_tradition
+			}
+		}
+
+		## Add up to 2 traditions from the new traditions list
+		while = {
+			count = 2
+			random_in_list = {
+				list = new_culture_traditions
+				limit = {
+					## Don't choose a tradition the old culture already had, or one that has already been given to the new culture
+					save_temporary_scope_as = temp_tradition_scope
+					NOR = {
+						scope:old_culture = { has_cultural_tradition = scope:temp_tradition_scope }
+						scope:new_culture = { has_cultural_tradition = scope:temp_tradition_scope }
+					}
+				}
+				save_scope_as = new_tradition_scope
+			}
+
+			if = {
+				limit = { exists = scope:new_tradition_scope }
+				scope:new_culture = { add_culture_tradition = scope:new_tradition_scope }
+				clear_saved_scope = new_tradition_scope
+			}
+		}
+	}
 }

@@ -25,6 +25,8 @@
  confederation_kingdom_decision_vassal_req: "You have at least #V 5#! members in the [confed_name.GetName|V]"
  confederation_kingdom_decision_vassal_opinion_req: "All members of the [confed_name.GetName|V] have at least #P 25#! [opinion|E] of you"
  confederation_kingdom_decision_vassal_prestige_level_req: "No other member of the [confed_name.GetName|V] has the same or higher [prestige_i][prestige_level|E]"
+ leave_confederation_decision: "Abandon Federation"
+ confederates_lose_opinion_tt: "Every member of [THIS.Char.GetConfederation.GetName] loses #N 20#! [opinion|E] of #high you#!"
 
 ## Events
  mpo_greatest_of_khans.0002.b: "Only together can we resist [genghis_khan.GetFirstNameNoTooltip]."

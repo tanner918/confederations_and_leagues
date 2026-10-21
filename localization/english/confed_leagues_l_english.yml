@@ -4,8 +4,8 @@
  offer_league_interaction_desc: "Ask [recipient.GetShortUINameNoTooltip] to join with you in a [league|E]."
  forming_league_tt: "You have not taken the $call_for_league_decision$ [decision|E]"
  ANOTHER_CULTURE_LEAGUE_REASON: "A [league|E] of [recipient.GetShortUINamePossessiveNoTooltip] [culture|E] exists: $VALUE|=+0$"
- ANOTHER_FAITH_LEAGUE_REASON: "A [league|E] of [recipient.GetShortUINamePossessiveNoTooltip] [faith|E] exists: $VALUE|=+0$"
- ANOTHER_FAITH_CONFEDERATION_REASON: "A [confederation|E] of [recipient.GetShortUINamePossessiveNoTooltip] [faith|E] exists: $VALUE|=+0$"
+ ANOTHER_FAITH_LEAGUE_REASON: "A [league|E] of [recipient.GetShortUINamePossessiveNoTooltip] [rite|E] exists: $VALUE|=+0$"
+ ANOTHER_FAITH_CONFEDERATION_REASON: "A [confederation|E] of [recipient.GetShortUINamePossessiveNoTooltip] [rite|E] exists: $VALUE|=+0$"
  CROWN_AUTHORITY_REASON: "[crown_authority|E] will be reduced: $VALUE|=+0$"
  league_members_joining_recipient_war_tt: "Your [league_members|E] join [recipient.GetShortUINamePossessive] [war|E] as Defenders"
  create_league_tt: "Forms a [league|E] with [recipient.GetShortUIName]"
@@ -32,7 +32,6 @@
  league_raiding_attacking_tt: "[league_members|E] may not [raid|E] or declare [war|E] on each other"
  offer_league_5_year_warning_tt: "#alert_trial @alert_icon! You have #high 5 years#! to form a [league|E]#!"
  league_leaving_warning_tt: "#alert_trial @alert_icon! [league_members|E] may leave their [league|E] at any time#!"
- recently_took_leave_league_decision_tt: "You have not used #high $leave_league_decision$#! within the last #high 5 years#!"
 
  leave_league_decision: "Abandon Defensive League"
  leave_league_decision_desc: "I have stood in defense of my fellow [league_members|E] long enough. Now, I will stand alone. And if the [league|E] cannot survive without me — it deserves oblivion!"
@@ -48,6 +47,7 @@
  confederation_empire_decision_vassal_opinion_req: "All members of the [confed_name.GetName|V] have at least #P 40#! [opinion|E] of you"
  confederation_empire_creation_tt: "You get an [empire|E]-[title_tier|E] [title|E] and all members of the [old_confederation.GetName|V] become your [vassals|E]\n@alert_icon!#alert_trial The Empire will have no [de_jure|E] lands#!"
  confed_league_no_king_members: "#N Your chosen setting for the \"[federation|E] Elevation\" game rule prevents elevation while a [king|E] is in the [confed_name.GetName|V] #!"
+ cl_new_confederation_culture_tt: "A new [culture|E] will be created for the historical identity of your [federation|E]. The [traditions|E] of this new culture will be a mix of your current traditions with some randomly changed. Any of your [vassals|E] and [courtiers|E] that have the same [heritage|E] as you will convert to it, and it will be made the new \"Confederation Culture\" for the new title #weak (Characters of this culture will be preferred in elections for this title as long as it has the [GetLaw('confederation_elective_succession_law').GetName] [succession_law|E])#!."
 
 ## Concepts
  game_concept_league: "Defensive League"
@@ -64,8 +64,8 @@
  game_concept_federation_desc: "A Federation is a broader term applying to both [confederations|E] and [leagues|E]."
 
 ## Laws
- tooltip_is_confederation_faith_hof: "Is [head_of_faith|E] of [federation|E]'s [faith|E] ([title.MakeScope.Var('confederation_faith').Faith.GetAdjective]): $VALUE|=+0$"
- tooltip_confederation_elector_faith_tt: "[candidate.GetSheHe|U] does not belong to the [federation|E]'s [faith|E] ([title.MakeScope.Var('confederation_faith').Faith.GetAdjective]): $VALUE|=+0$"
+ tooltip_is_confederation_faith_hof: "Is [head_of_faith|E] of [federation|E]'s [rite|E] ([title.MakeScope.Var('confederation_faith').Rite.GetAdjective]): $VALUE|=+0$"
+ tooltip_confederation_elector_faith_tt: "[candidate.GetSheHe|U] does not belong to the [federation|E]'s [rite|E] ([title.MakeScope.Var('confederation_faith').Rite.GetAdjective]): $VALUE|=+0$"
 
 ## Events
  mpo_interactions_events.0004.desc_offer_league: "No, I will not belong to any pitiful defensive league."
@@ -94,7 +94,7 @@
  setting_CL_historical_names_all: "All"
  setting_CL_historical_names_all_desc: "Under certain conditions, a [confederation|E] or [league|E] may get a historical name, even anachronistic ones. Historical names can only appear once each."
  setting_CL_historical_names_none: "None"
- setting_CL_historical_names_none_desc: "Don't allow a [confederation|E] or [league|E] to get ANY historical names, instead using only the normal [culture|E]-, [faith|E]-, or [duchy|E]-based names."
+ setting_CL_historical_names_none_desc: "Don't allow a [confederation|E] or [league|E] to get ANY historical names, instead using only the normal [culture|E]-, [rite|E]-, or [duchy|E]-based names."
  setting_CL_historical_names_during_ck3: "During CK3 Time Period"
  setting_CL_historical_names_during_ck3_desc: "Under certain conditions, a [confederation|E] or [league|E] may only get a historical name that appeared during the time period of CK3. Historical names can only appear once each."
 

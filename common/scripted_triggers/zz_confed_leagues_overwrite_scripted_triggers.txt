@@ -2,7 +2,7 @@
 ## From mpo_scripted_triggers.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.19.0.4
+# Up-to-date as of CK3 1.20.1.1
 
 valid_confederation_member_trigger = {
 	is_playable_character = yes

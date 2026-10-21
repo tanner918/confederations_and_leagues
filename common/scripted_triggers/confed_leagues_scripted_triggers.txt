@@ -20,7 +20,7 @@ CL_uses_leagues = {
 
 		# Below should let admin realms use leagues. But, given how admin realms work, with characters constantly switching between being landed/unlanded, I will likely not allow them in to prevent any issues. They also are less likely to ever be in a position where joining a defensive league would be necessary.
 		# AND = {
-		# 	government_has_flag = government_is_administrative
+		# 	government_has_mechanic = administrative
 		# 	is_independent_ruler = yes
 		# 	is_landed = yes
 		# }
@@ -33,13 +33,13 @@ CL_uses_leagues = {
 # scope:recipient = Character who received and accepted the invite to join a confederation
 CL_faith_based_confed_league_trigger = {
 	# Not sure if these are going to be the best conditions, but wanted to come up with something. Will likely be changed.
-	faith = {
+	rite = {
 		OR = { # Faith must have at least one of these
-			has_doctrine = doctrine_pluralism_fundamentalist
-			has_doctrine = tenet_communal_identity
+			rite_has_doctrine = doctrine_pluralism_fundamentalist
+			rite_has_tenet = tenet_communal_identity
 		}
 		NOR = { # Faith can't have any of these
-			has_doctrine = doctrine_pluralism_pluralistic
+			rite_has_doctrine = doctrine_pluralism_pluralistic
 		}
 	}
 }
@@ -130,4 +130,26 @@ valid_defensive_league_member_trigger = {
 		text = CL_has_valid_league_government_tt
 	}
 	is_confederation_member = no
+}
+
+
+## Checks if the scoped confederation/title is based off a historical confederation that should have a new culture created for it
+# Root Scope should be the confederation/title being checked
+
+CL_should_have_confederation_culture_created = {
+	trigger_if = {
+		limit = { has_variable = historical_confed_league }
+		var:historical_confed_league = {
+			OR = {
+				# THE FLAGS BEING CHECKED HERE SHOULD MATCH WHATS BEING CHECKED AT THE END OF THE confederation_kingdom_decision EFFECT BLOCK
+				this = flag:cl_masmuda_confederacy
+				this = flag:cl_zenati_confederacy
+				this = flag:cl_sanhaja_confederacy
+				this = flag:cl_kabyle_confederacy
+				this = flag:cl_chaoui_confederacy
+				this = flag:cl_mozabite_confederacy
+			}
+		}
+	}
+	trigger_else = { always = no }
 }

@@ -1,6 +1,6 @@
 ﻿# This is the base game file, because apparently you can't just overwrite one thing, you have to do the entire file
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.19.0.4
+# Up-to-date as of CK3 1.20.1.1
 
 namespace = mpo_greatest_of_khans
 
@@ -571,7 +571,7 @@ mpo_greatest_of_khans.0101 = {
 			limit = {
 				is_ai = no
 			}
-			stress_impact = {
+			stress_and_fulfillment_impact = {
 				arrogant = major_stress_impact_gain
 				brave = major_stress_impact_gain
 				ambitious = major_stress_impact_gain
@@ -605,7 +605,7 @@ mpo_greatest_of_khans.0101 = {
 		 	name = fought_for_gok_alone
 		 	value = gok_obedient_vassals_strength_value
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			humble = medium_stress_impact_gain
 			craven = major_stress_impact_gain
 		}
@@ -742,7 +742,7 @@ mpo_greatest_of_khans.0102 = {
 			target = scope:gurkhan_to_gok
 			opinion = 40
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			craven = medium_stress_impact_gain
 		}
 	}
@@ -796,7 +796,7 @@ mpo_greatest_of_khans.0102 = {
 				opinion = -40
 			}
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			craven = medium_stress_impact_gain
 		}
 	}
@@ -819,7 +819,7 @@ mpo_greatest_of_khans.0102 = {
 			target = scope:gurkhan_to_gok
 			opinion = 10
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			brave = medium_stress_impact_gain
 			arrogant = major_stress_impact_gain
 		}
@@ -870,7 +870,7 @@ mpo_greatest_of_khans.0102 = {
 			opinion = 30
 		}
 
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			brave = medium_stress_impact_gain
 			arrogant = major_stress_impact_gain
 		}
@@ -1016,6 +1016,7 @@ scripted_trigger mpo_greatest_of_khans_0002_confederation_trigger = {
 mpo_greatest_of_khans.0001 = {
 	type = character_event
 	window = fullscreen_event
+	queue_icon = "gfx/interface/icons/situation_types/the_great_steppe.dds"
 	title = mpo_greatest_of_khans.0001.t
 	desc = mpo_greatest_of_khans.0001.desc
 	theme = nomads
@@ -1083,6 +1084,7 @@ mpo_greatest_of_khans.0001 = {
 mpo_greatest_of_khans.0002 = {
 	type = character_event
 	window = fullscreen_event
+	queue_icon = "gfx/interface/icons/situation_types/the_great_steppe.dds"
 	title = mongol_invasion.1002.t
 	desc = {
 		first_valid = {
@@ -1250,7 +1252,7 @@ mpo_greatest_of_khans.0002 = {
 			resolve_title_and_vassal_change = scope:change
 		}
 
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			brave = minor_stress_impact_gain
 			stubborn = minor_stress_impact_gain
 		}
@@ -1345,7 +1347,7 @@ mpo_greatest_of_khans.0002 = {
 				change_county_fertility = major_county_fertility_level_gain
 			}
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			ambitious = minor_stress_impact_gain
 		}
 		ai_chance = {
@@ -1533,7 +1535,7 @@ mpo_greatest_of_khans.0003 = {
 		trigger = {
 			OR = {
 				faith = faith:nestorian
-				faith.religion = faith:manichean.religion
+				faith.religion = faith:manichaean_faith.religion
 			}
 		}
 		name = mpo_greatest_of_khans.0003.f
@@ -1985,7 +1987,7 @@ mpo_greatest_of_khans.0030 = {
 				}
 			}
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			compassionate = major_stress_impact_gain
 			greedy = massive_stress_impact_gain
 			lazy = medium_stress_impact_gain
@@ -2018,7 +2020,7 @@ mpo_greatest_of_khans.0030 = {
 				nomad_convert_people_to_feudal_effect = yes
 			}
 		}
-		convert_to_administrative_from_feudalism_effect = yes
+		convert_to_administrative_from_feudalism_effect = { GOVERNMENT_TO_ADOPT = flag:dynamic }
 		hidden_effect = {
 			every_vassal = {
 				limit = {
@@ -2130,12 +2132,7 @@ mpo_greatest_of_khans.0030 = {
 			}
 			modifier = {
 				culture = {
-					any_parent_culture_or_above = {
-						OR = {
-							this = culture:han
-							this = culture:greek
-						}
-					}
+					culture_is_historically_admin_trigger = yes
 				}
 				add = 100
 			}
@@ -2439,6 +2436,7 @@ mpo_greatest_of_khans.0051 = {
 mpo_greatest_of_khans.1001 = {
 	type = character_event
 	window = fullscreen_event
+	queue_icon = "gfx/interface/icons/situation_types/the_great_steppe.dds"
 	title = mongol_invasion.1002.t
 	desc = {
 		first_valid = {
@@ -2615,7 +2613,7 @@ mpo_greatest_of_khans.1001 = {
 			resolve_title_and_vassal_change = scope:change
 		}
 
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			brave = minor_stress_impact_gain
 			stubborn = minor_stress_impact_gain
 		}
@@ -2710,7 +2708,7 @@ mpo_greatest_of_khans.1001 = {
 				change_county_fertility = major_county_fertility_level_gain
 			}
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			ambitious = minor_stress_impact_gain
 		}
 		ai_chance = {

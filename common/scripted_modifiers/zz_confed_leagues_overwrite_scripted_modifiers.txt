@@ -2,7 +2,7 @@
 ## From 00_elective_successions_scripted_modifiers.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.19.0.4
+# Up-to-date as of CK3 1.20.1.1
 
 elector_voting_pattern_confederation_modifier = {
 	modifier = {
@@ -31,9 +31,9 @@ elector_voting_pattern_confederation_modifier = {
 			has_variable = confederation_faith
 			var:confederation_faith = {
 				NOT = {
-					this = scope:candidate.faith
+					this = scope:candidate.rite
 				}
-				this = root.faith
+				this = root.rite
 			}
 		}
 	}
@@ -89,19 +89,18 @@ elector_voting_pattern_confederation_modifier = {
 	modifier = {
 		desc = tooltip_confederation_good_prowess_tt
 		prowess >= high_skill_rating
-		prowess < high_skill_rating
+		prowess < very_high_skill_rating
 		add = 10
 	}
 	modifier = {
 		desc = tooltip_confederation_great_prowess_tt
 		prowess >= very_high_skill_rating
-		prowess < very_high_skill_rating
+		prowess < extremely_high_skill_rating
 		add = 15
 	}
 	modifier = {
 		desc = tooltip_confederation_amazing_prowess_tt
-		prowess > extremely_high_skill_rating
-		prowess <= extremely_high_skill_rating
+		prowess >= extremely_high_skill_rating
 		add = 20
 	}
 	modifier = {

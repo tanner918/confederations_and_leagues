@@ -19,14 +19,14 @@ call_for_league_decision = {
 	confirm_text = call_for_confederation_decision_confirm
 
 	is_shown = {
-		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
-		CL_uses_leagues = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for defensive leagues
-		is_playable_character = yes
 		is_independent_ruler = yes
+		CL_uses_leagues = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for defensive leagues
+		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
 		NOR = {
-			has_character_flag = forming_confederation
 			is_confederation_member = yes
+			has_character_flag = forming_confederation
 		}
+		is_playable_character = yes
 	}
 
 	is_valid = {
@@ -57,20 +57,9 @@ call_for_league_decision = {
 			}
 		}
 		#This is just meant to stop player exploits
-		trigger_if = { # C&L: Made this tooltip change depending on whether you will be in a Defensive League or Confederation
+		trigger_if = {
 			limit = {
 				is_ai = no
-				CL_uses_leagues = yes
-			}
-			custom_tooltip = {
-				text = recently_took_leave_league_decision_tt
-				NOT = { has_variable = left_confederation }
-			}
-		}
-		trigger_else_if = {
-			limit = {
-				is_ai = no
-				CL_uses_confederations = yes
 			}
 			custom_tooltip = {
 				text = recently_took_leave_confederation_decision_tt
@@ -82,21 +71,13 @@ call_for_league_decision = {
 
 	is_valid_showing_failures_only = {
 		age >= 6
+		NOT = { has_trait = infirm }
+		is_available = yes
 		trigger_if = {
 			limit = {
-				is_ai = no
+				is_ai = yes
 			}
-			NOT = { exists = involved_activity }
-			NOT = { has_trait = infirm }
-			is_physically_able = yes
-			is_travelling = no
-		}
-		trigger_else = {
-			is_imprisoned = no
-			is_incapable = no
-			is_alive = yes
 			is_migrating = no
-			NOT = { has_trait = infirm }
 		}
 	}
 
@@ -161,24 +142,7 @@ call_for_league_decision = {
 			custom_tooltip = confederation_modifier_tt
 		}
 		# C&L: Base game just checks if you have Nomadic government, and fallsback to assuming you are Tribal. I changed it so that it now checks what realm law you use, and notifies you that that specific realm law will be limited
-		if = {
-			limit = {
-				realm_law_use_nomadic_authority = yes
-			}
-			custom_tooltip = confederation_restrictions_warning_tt
-		}
-		else_if = {
-			limit = {
-				realm_law_use_tribal_authority = yes
-			}
-			custom_tooltip = confederation_restrictions_tribe_warning_tt
-		}
-		else_if = {
-			limit = {
-				realm_law_use_crown_authority = yes
-			}
-			custom_tooltip = league_restrictions_crown_authority_warning_tt
-		}
+		CL_federation_realm_law_title_creation_restriction_tooltip_effect = yes
 		custom_tooltip = league_leaving_warning_tt # C&L: Changed to better fit defensive leagues
 		# C&L: To better reference whether you are trying to form a confederation or league later
 		save_scope_value_as = {
@@ -396,7 +360,7 @@ call_for_league_decision = {
 			any_confederation = {
                 confederation_type = confederation_type:defensive_league_type # C&L: Added this condition so that it only checks existing "Defensive Leagues"
 				has_variable = confederation_faith
-				var:confederation_faith = root.faith
+				var:confederation_faith = root.rite
 			}
 			factor = 0.05
 		}

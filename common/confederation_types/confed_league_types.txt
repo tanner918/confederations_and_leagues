@@ -45,6 +45,13 @@ defensive_league_type = {
 						flag = new_confederate
 						years = 3
 					}
+					if = {
+						limit = { government_has_flag = government_is_nomadic }
+						add_character_modifier = {
+							modifier = mpo_confederation_member_modifier
+							years = 5
+						}
+					}
 				}
 			}
 		}
@@ -102,9 +109,9 @@ defensive_league_type = {
 		if = {
 			limit = {
 				scope:left_confederation = {
-					NOR = {
-						has_character_flag = migrating_from_confederation
-						has_variable = left_confederation
+					has_none_of_variables = {
+						name = migrating_from_confederation
+						name = left_confederation
 					}
 				}
 			}
@@ -122,12 +129,11 @@ defensive_league_type = {
 				}
 			}
 			scope:left_confederation = {
-			   send_interface_message = {
+				send_interface_message = {
 					type = msg_broken_confederation
 					title = msg_broken_league_root
 					desc = msg_broken_league_desc_root
-					left_icon = confederation
-			   }
+				}
 			}
 		}
 	}
@@ -244,9 +250,9 @@ nomadic_confederation = {
 		if = {
 			limit = {
 				scope:left_confederation = {
-					NOR = {
-						has_character_flag = migrating_from_confederation
-						has_variable = left_confederation
+					has_none_of_variables = {
+						name = migrating_from_confederation
+						name = left_confederation
 					}
 				}
 			}
@@ -265,12 +271,11 @@ nomadic_confederation = {
 				}
 			}
 			scope:left_confederation = {
-			   send_interface_message = {
+				send_interface_message = {
 					type = msg_broken_confederation
 					title = msg_broken_confederation_no_migrate_root
 					desc = msg_broken_confederation_desc_no_migrate_root
-					left_icon = confederation
-			   }
+				}
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 ﻿# This is the base game file, because apparently you can't just overwrite one thing, you have to do the entire file
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.19.0.4
+# Up-to-date as of CK3 1.20.1.1
 
 namespace = mpo_interactions_events
 
@@ -144,24 +144,7 @@ mpo_interactions_events.0002 = {
 			}
 		}
 		# C&L: Base game only checks if you are Nomadic, and uses a fallback for tribal. I changed it to instead check based off the respective realm law you use
-		if = {
-			limit = {
-				realm_law_use_nomadic_authority = yes
-			}
-			custom_tooltip = confederation_restrictions_warning_tt
-		}
-		else_if = {
-			limit = {
-				realm_law_use_tribal_authority = yes
-			}
-			custom_tooltip = confederation_restrictions_tribe_warning_tt
-		}
-		else_if = {
-			limit = {
-				realm_law_use_crown_authority = yes
-			}
-			custom_tooltip = league_restrictions_crown_authority_warning_tt
-		}
+		CL_federation_realm_law_title_creation_restriction_tooltip_effect = yes
 		if = {
 			limit = {
 				government_has_flag = government_is_nomadic
@@ -412,7 +395,7 @@ mpo_interactions_events.0101 = {
 				}
 			}
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			base = minor_stress_impact_gain
 		}
 	}
@@ -586,7 +569,7 @@ mpo_interactions_events.0102 = {
 				}
 			}
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			base = minor_stress_impact_gain
 		}
 	}
@@ -631,7 +614,7 @@ mpo_interactions_events.0102 = {
 				}
 			}
 		}
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			base = medium_stress_impact_gain
 		}
 
@@ -715,7 +698,7 @@ mpo_interactions_events.0006 = {
 					terrain = desert_mountains
 				}
 				NAND = {
-					location_has_harsh_winter_trigger = yes
+					has_province_modifier = winter_harsh_modifier
 					OR = {
 						current_month >= 11
 						current_month <= 4
@@ -736,7 +719,7 @@ mpo_interactions_events.0006 = {
 					terrain = floodplains
 					terrain = desert_mountains
 				}
-				location_has_harsh_winter_trigger = yes
+				has_province_modifier = winter_harsh_modifier
 				OR = {
 					current_month >= 11
 					current_month <= 4
@@ -807,6 +790,35 @@ mpo_interactions_events.0006 = {
 				add_character_flag = loving_blood_brother
 			}
 		}
+		if = {
+			limit = {
+				scope:blood_bro = {
+					is_acclaimed = yes
+					is_knight_of = root
+				}
+			}
+			scope:blood_bro.accolade = {
+				if = {
+					limit = {
+						root = {
+							prestige_level >= 4
+						}
+					}
+					add_glory = major_glory_gain
+				}
+				else_if = {
+					limit = {
+						root = {
+							prestige_level >= 2
+						}
+					}
+					add_glory = medium_glory_gain
+				}
+				else = {
+					add_glory = minor_glory_gain
+				}
+			}
+		}
 	}
 	#My blood brother will help me destroy our common foe
 	option = {
@@ -824,7 +836,7 @@ mpo_interactions_events.0006 = {
 			value = scope:shared_foe
 		}
 
-		stress_impact = {
+		stress_and_fulfillment_impact = {
 			vengeful = miniscule_stress_impact_loss
 			sadistic = miniscule_stress_impact_loss
 			wrathful = miniscule_stress_impact_loss
@@ -963,11 +975,11 @@ mpo_interactions_events.0006 = {
 	option = {
 		trigger = {
 			scope:blood_bro = {
-				NOR = {
-					has_character_flag = warrior_blood_brother
-					has_character_flag = august_blood_brother
-					has_character_flag = loving_blood_brother
-					has_character_flag = clever_blood_brother
+				has_none_of_variables = {
+					name = warrior_blood_brother
+					name = august_blood_brother
+					name = loving_blood_brother
+					name = clever_blood_brother
 				}
 			}
 		}
