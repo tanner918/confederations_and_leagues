@@ -2,14 +2,15 @@
 ## From dlc_decisions\mpo\mpo_decisions.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.20.1.1
+# Up-to-date as of CK3 1.21.0
 
 call_for_confederation_decision = {
 	picture = {
 		reference = "gfx/interface/illustrations/decisions/mpo_decision_confederation.dds"
 	}
-	decision_group_type = major
-	
+	decision_group_type = realm
+	sort_order = 20
+
 	ai_check_interval_by_tier = {
 		barony = 0
 		county = 8
@@ -23,14 +24,14 @@ call_for_confederation_decision = {
 	selection_tooltip = call_for_confederation_decision_tooltip
 
 	is_shown = {
-		is_independent_ruler = yes
-        CL_uses_confederations = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for confederations
         CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
-		NOR = {
-			is_confederation_member = yes
-			has_character_flag = forming_confederation
-		}
+        CL_uses_confederations = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for confederations
 		is_playable_character = yes
+		is_independent_ruler = yes
+		NOR = {
+			has_character_flag = forming_confederation
+			is_confederation_member = yes
+		}
 	}
 
 	is_valid = {
@@ -172,6 +173,15 @@ call_for_confederation_decision = {
 		is_playable_character = yes
 		is_confederation_member = no
 		is_alive = yes
+		CL_has_appropriate_realm_laws = yes # C&L: Base game just checks if you have Nomadic government, and fallsback to assuming you are Tribal. I changed it so that it now checks what realm law you use, and makes sure you only have the relevant laws
+		NOR = {
+			has_trait = conqueror
+			has_trait = greatest_of_khans
+			has_trait = infirm
+		}
+		age >= 6
+		is_available = yes
+		is_migrating = no
 		#Culture friends # C&L: This requires that the AI has at least two neighbors of the same culture who either: have the same faith; also have unreformed faiths; or whose faith doesn't view their own faith as Hostile/Evil. Might add an alternative to this so that they don't need to same-culture neighbors as long as their neighbors have the same faith with certain tenants, so they could maybe form a faith-based confederation/league instead of a culture-based one. (Will likely also need to make the below neighbor check inside its own scripted trigger so that it could be referenced later when deciding whether to make the confederations/leagues culture- or faith-based)
 		any_land_neighboring_realm_with_tributaries_owner = {
 			count >= 2
@@ -393,6 +403,12 @@ call_for_confederation_decision = {
 
 leave_confederation_decision = {
 	picture = {
+		trigger = {
+			gdp_is_league_member_trigger = yes
+		}
+		reference = "gfx/interface/illustrations/decisions/independent.dds"
+	}
+	picture = {
 		reference = "gfx/interface/illustrations/decisions/mpo_decision_confederation.dds"
 	}
 	
@@ -405,24 +421,45 @@ leave_confederation_decision = {
 		hegemony = 0
 	}
 
-	# C&L: Made description change depending on which type of confederation/league you are currently in
+	title = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					# C&L: Made Defensive Leagues use same title as Trade Leagues
+					OR = {
+						gdp_is_league_member_trigger = yes
+						confederation.confederation_type ?= confederation_type:defensive_league_type
+					}
+				}
+				desc = leave_confederation_decision_league
+			}
+			desc = leave_confederation_decision
+		}
+	}
 	desc = {
 		first_valid = {
 			triggered_desc = {
 				trigger = {
-					confederation ?= {
-						confederation_type = confederation_type:defensive_league_type
+					# C&L: Made Defensive Leagues use same description as Trade Leagues
+					OR = {
+						gdp_is_league_member_trigger = yes
+						confederation.confederation_type ?= confederation_type:defensive_league_type
 					}
 				}
-				desc = leave_league_decision_desc
+				desc = leave_confederation_decision_desc_league
 			}
 			desc = leave_confederation_decision_desc
 		}
 	}
-
-	# C&L: Made decision tooltip change depending on which type of confederation/league you are currently in
 	selection_tooltip = {
 		first_valid = {
+			triggered_desc = {
+				trigger = {
+					gdp_is_league_member_trigger = yes
+				}
+				desc = leave_confederation_decision_tooltip_league
+			}
+			# C&L: Added tooltip for Defensive Leagues
 			triggered_desc = {
 				trigger = {
 					confederation ?= {
@@ -436,7 +473,10 @@ leave_confederation_decision = {
 	}
 
 	is_shown = {
-		confederation ?= { is_house_based = no }
+		confederation ?= {
+			is_house_based = no
+			confederation_type != confederation_type:lombard_league
+		}
 	}
 
 	is_valid = {
@@ -464,9 +504,7 @@ leave_confederation_decision = {
 							}
 						}
 						# C&L: Added this additional check so that this prestige increase only applies to Nomads actually in the Great Steppe, since that's what it seems to be about
-						any_character_situation = {
-							this = situation:the_great_steppe
-						}
+						any_character_situation = { this = situation:the_great_steppe }
 					}
 					multiply = 1.5
 				}
@@ -489,7 +527,8 @@ leave_confederation_decision = {
 				value = flag:defensive_league
 			}
 		}
-		else = {
+		else_if = {
+			limit = { confederation.confederation_type = confederation_type:nomadic_confederation }
 			save_scope_value_as = {
 				name = old_CL_type
 				value = flag:confederation
@@ -513,22 +552,7 @@ leave_confederation_decision = {
 		}
 		show_as_tooltip = {
 			root.confederation = {
-				#Your confederation will survive, it has more members
-				if = {
-					limit = {
-						any_confederation_member = {
-							count >= 2
-							NOT = {
-								this = root
-							}
-						}
-					}
-					remove_confederation_member = root
-				}
-				#Your confederation is toast
-				else = {
-					disband_confederation = yes
-				}
+				leave_confederation_membership_effect = { LEAVER = root }
 			}
 		}
 		if = {
@@ -539,6 +563,7 @@ leave_confederation_decision = {
 				remove_character_modifier = mpo_confederation_member_modifier
 			}
 		}
+		# C&L: Base game made this tooltip change depending on whether you were leaving a Nomadic Confederation or a Trade League, but I changed this tooltip to be more universal, referencing the specific confederation you are leaving, so keeping my changes instead.
 		custom_tooltip = confederates_lose_opinion_tt
 		
 		save_scope_as = leaver
@@ -550,7 +575,12 @@ leave_confederation_decision = {
 
 	ai_potential = {
 		is_confederation_member = yes
-		is_independent_ruler = no
+		trigger_if = {
+			limit = { is_independent_ruler = no }
+			NOT = {
+				any_liege_or_above = { confederation ?= root.confederation }
+			}
+		}
 		age >= 12
 		is_at_war = no
 		is_incapable = no
@@ -560,13 +590,11 @@ leave_confederation_decision = {
 					has_trait = greatest_of_khans
 					has_trait = conqueror
 					is_gurkhan = yes
-				}
-			}
-			any_land_neighboring_realm_with_tributaries_owner = {
-				any_owned_story = {
-					OR = {
-						story_type = story_mongol_invasion
-						story_type = story_greatest_of_khans
+					any_owned_story = {
+						OR = {
+							story_type = story_mongol_invasion
+							story_type = story_greatest_of_khans
+						}
 					}
 				}
 			}
@@ -601,15 +629,17 @@ leave_confederation_decision = {
 		base = 0
 		# PERKS
 		modifier = { # Only member of culture
-			NOT = {
-				confederation = {
+			confederation = {
+				NOT = {
 					any_confederation_member = {
+						this = root
 						has_same_culture_as = root
 					}
 				}
 			}
 			confederation = {
 				any_confederation_member = {
+					this != root
 					culture = {
 						cultural_acceptance = {
 							target = root.culture
@@ -625,7 +655,6 @@ leave_confederation_decision = {
 				multiply = -0.5
 			}
 		}
-
 		# MAIN
 		modifier = { #Only member of faith, no pluralism.
 			NOR = {
@@ -719,15 +748,16 @@ leave_confederation_decision = {
 			add = 50
 		}
 		modifier = { #I fought an independence war against confederation member
-			root = {
-				exists = var:independence_war_former_liege
-				var:independence_war_former_liege = {
-					is_member_of_confederation = root.confederation
-				}
+			exists = var:independence_war_former_liege
+			var:independence_war_former_liege = {
+				is_member_of_confederation = root.confederation
 			}
 			add = 100
 		}
 		modifier = { #Is wrong government type
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			# C&L: Base game just checked if you weren't tribal/nomadic/herder. Changed it so that it now checks if your government doesn't match the type of confederation/league you are currently in
 			OR = {
 				AND = {
@@ -748,20 +778,10 @@ leave_confederation_decision = {
 			}
 			add = 50
 		}
-		modifier = { # Isolationist tradition
-			confederation = {
-				any_confederation_member = {
-					NOT = {
-						culture = root.culture
-					}
-				}
-			}
-			root.culture = {
-				has_cultural_tradition = tradition_isolationist
-			}
-			add = 20
-		}
 		modifier = { # Isolationist tradition and all members are other culture
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				NOT = {
 					any_confederation_member = {
@@ -778,6 +798,9 @@ leave_confederation_decision = {
 			add = 50
 		}
 		modifier = { # Isolationist tradition
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -799,14 +822,10 @@ leave_confederation_decision = {
 			add = 10
 		}
 		modifier = { #All Bankrupt
-			NOT = {
-				confederation = {
-					any_confederation_member = {
-						NOT = {
-							this = root
-						}
-						gold <= -1
-					}
+			confederation = {
+				any_confederation_member = {
+					this != root
+					gold <= -1
 				}
 			}
 			add = 50
@@ -822,10 +841,11 @@ leave_confederation_decision = {
 		}
 		modifier = { # Is the Rightful Liege of recipient
 			trigger = {
-				confederation = {
-					any_confederation_member = {
-						is_rightful_liege_of = root
-					}
+				gdp_is_league_member_trigger = no
+			}
+			confederation = {
+				any_confederation_member = {
+					is_rightful_liege_of = root
 				}
 			}
 			add = -20
@@ -833,13 +853,14 @@ leave_confederation_decision = {
 		modifier = { #No adjacency
 			desc = offer_vassalization_interaction_aibehavior_unconnectedrealm_tt
 			trigger = {
-				NOT = {
-					any_land_neighboring_realm_with_tributaries_owner = {
-						OR = {
+				gdp_is_league_member_trigger = no
+			}
+			NOT = {
+				any_land_neighboring_realm_with_tributaries_owner = {
+					OR = {
+						is_member_of_confederation = root.confederation
+						suzerain ?= {
 							is_member_of_confederation = root.confederation
-							suzerain ?= {
-								is_member_of_confederation = root.confederation
-							}
 						}
 					}
 				}
@@ -849,21 +870,22 @@ leave_confederation_decision = {
 		modifier = { #Distant Realm
 			desc = offer_vassalization_interaction_aibehavior_distantrealm_tt
 			trigger = {
-				NOR = {
-					any_land_neighboring_realm_with_tributaries_owner = {
-						OR = {
+				gdp_is_league_member_trigger = no
+			}
+			NOR = {
+				any_land_neighboring_realm_with_tributaries_owner = {
+					OR = {
+						is_member_of_confederation = root.confederation
+						suzerain ?= {
 							is_member_of_confederation = root.confederation
-							suzerain ?= {
-								is_member_of_confederation = root.confederation
-							}
 						}
 					}
-					confederation = {
-						any_confederation_member = {
-							this != root
-							capital_province = {
-								squared_distance = { target = root.capital_province value < 100000 }
-							}
+				}
+				confederation = {
+					any_confederation_member = {
+						this != root
+						capital_province ?= {
+							squared_distance = { target = root.capital_province value < 100000 }
 						}
 					}
 				}
@@ -873,21 +895,22 @@ leave_confederation_decision = {
 		modifier = { #Remote Realm.
 			desc = offer_vassalization_interaction_aibehavior_remoterealm_tt
 			trigger = {
-				NOR = {
-					any_land_neighboring_realm_with_tributaries_owner = {
-						OR = {
+				gdp_is_league_member_trigger = no
+			}
+			NOR = {
+				any_land_neighboring_realm_with_tributaries_owner = {
+					OR = {
+						is_member_of_confederation = root.confederation
+						suzerain ?= {
 							is_member_of_confederation = root.confederation
-							suzerain ?= {
-								is_member_of_confederation = root.confederation
-							}
 						}
 					}
-					confederation = {
-						any_confederation_member = {
-							this != root
-							capital_province = {
-								squared_distance = { target = root.capital_province value < 200000 }
-							}
+				}
+				confederation = {
+					any_confederation_member = {
+						this != root
+						capital_province ?= {
+							squared_distance = { target = root.capital_province value < 200000 }
 						}
 					}
 				}
@@ -896,6 +919,9 @@ leave_confederation_decision = {
 		}
 		#Military strength higher than any member
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			NOT = {
 				confederation = {
 					any_confederation_member = {
@@ -910,6 +936,9 @@ leave_confederation_decision = {
 		}
 		#Military strength much higher than any member
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			NOT = {
 				confederation = {
 					any_confederation_member = {
@@ -929,6 +958,9 @@ leave_confederation_decision = {
 		}
 		#Military strength lower than another member
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -941,6 +973,9 @@ leave_confederation_decision = {
 		}
 		#Military strength lower than every other member
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				NOT = {
 					any_confederation_member = {
@@ -957,6 +992,7 @@ leave_confederation_decision = {
 		# MINOR
 		modifier = { #Friend modifier.
 			trigger = {
+				gdp_is_league_member_trigger = no
 				confederation = {
 					any_confederation_member = {
 						has_relation_friend = root
@@ -967,6 +1003,7 @@ leave_confederation_decision = {
 		}
 		modifier = { #Best Friend modifier.
 			trigger = {
+				gdp_is_league_member_trigger = no
 				confederation = {
 					any_confederation_member = {
 						has_relation_best_friend = root
@@ -977,6 +1014,7 @@ leave_confederation_decision = {
 		}
 		modifier = { #Lover modifier.
 			trigger = {
+				gdp_is_league_member_trigger = no
 				confederation = {
 					any_confederation_member = {
 						has_relation_lover = root
@@ -987,6 +1025,7 @@ leave_confederation_decision = {
 		}
 		modifier = { #Soulmate modifier.
 			trigger = {
+				gdp_is_league_member_trigger = no
 				confederation = {
 					any_confederation_member = {
 						has_relation_soulmate = root
@@ -997,6 +1036,7 @@ leave_confederation_decision = {
 		}
 		modifier = { #Rivalry modifier.
 			trigger = {
+				gdp_is_league_member_trigger = no
 				confederation = {
 					any_confederation_member = {
 						has_relation_rival = root
@@ -1007,6 +1047,7 @@ leave_confederation_decision = {
 		}
 		modifier = { #Nemesis modifier.
 			trigger = {
+				gdp_is_league_member_trigger = no
 				confederation = {
 					any_confederation_member = {
 						has_relation_nemesis = root
@@ -1056,6 +1097,7 @@ leave_confederation_decision = {
 		}
 		modifier = { #Illegitimacy modifier.
 			trigger = {
+				gdp_is_league_member_trigger = no
 				confederation = {
 					any_confederation_member = {
 						NOT = {
@@ -1070,6 +1112,7 @@ leave_confederation_decision = {
 							}
 							has_trait = denounced
 							has_trait = disinherited
+							has_trait = adopted_no_inheritance
 						}
 					}
 				}
@@ -1079,11 +1122,9 @@ leave_confederation_decision = {
 		
 		modifier = { # Conqueror/GoK leaves immediately
 			trigger = {
-				root = {
-					OR = {
-						has_trait = conqueror
-						has_trait = greatest_of_khans
-					}
+				OR = {
+					has_trait = conqueror
+					has_trait = greatest_of_khans
 				}
 			}
 			add = 1000
@@ -1091,88 +1132,81 @@ leave_confederation_decision = {
 
 		modifier = { # Ambitious
 			trigger = {
-				root = {
-					has_trait = ambitious
-				}
+				has_trait = ambitious
+				gdp_is_league_member_trigger = no
 			}
 			add = 50
 		}
 
 		modifier = { # Paranoid
 			trigger = {
-				root = {
-					has_trait = paranoid
-				}
+				has_trait = paranoid
+				gdp_is_league_member_trigger = no
 			}
 			add = 20
 		}
 
 		modifier = { # Arrogant
 			trigger = {
-				root = {
-					has_trait = arrogant
-				}
+				has_trait = arrogant
+				gdp_is_league_member_trigger = no
 			}
 			add = 25
 		}
 
 		modifier = { # Fickle
 			trigger = {
-				root = {
-					has_trait = fickle
-				}
+				has_trait = fickle
+				gdp_is_league_member_trigger = no
 			}
 			add = 50
 		}
 
 		modifier = { # Greedy
 			trigger = {
-				root = {
-					has_trait = greedy
-				}
+				has_trait = greedy
+				gdp_is_league_member_trigger = no
 			}
 			add = 20
 		}
 
 		modifier = { # just
 			trigger = {
-				root = {
-					has_trait = just
-				}
+				has_trait = just
+				gdp_is_league_member_trigger = no
 			}
 			add = -10
 		}
 
 		modifier = { # Trusting
 			trigger = {
-				root = {
-					has_trait = trusting
-				}
+				has_trait = trusting
+				gdp_is_league_member_trigger = no
 			}
 			add = -20
 		}
 
 		modifier = { # Content
 			trigger = {
-				root = {
-					has_trait = content
-				}
+				has_trait = content
+				gdp_is_league_member_trigger = no
 			}
 			add = -50
 		}
 
 		modifier = { # Craven
 			trigger = {
-				root = {
-					has_trait = craven
-				}
+				has_trait = craven
+				gdp_is_league_member_trigger = no
 			}
 			add = -50
 		}
 
 		# OPINION INFLUENCE
 		modifier = {
-			add = -25
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1186,9 +1220,12 @@ leave_confederation_decision = {
 					}
 				}
 			}
+			add = -25
 		}
 		modifier = {
-			add = -50
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1202,8 +1239,12 @@ leave_confederation_decision = {
 					}
 				}
 			}
+			add = -50
 		}
 		modifier = { #Compare Opinion modifier.
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1218,6 +1259,9 @@ leave_confederation_decision = {
 			add = 20
 		}
 		modifier = { #Compare Opinion modifier.
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1232,6 +1276,9 @@ leave_confederation_decision = {
 			add = 20
 		}
 		modifier = { #Compare Opinion modifier.
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1246,6 +1293,9 @@ leave_confederation_decision = {
 			add = -20
 		}
 		modifier = { #Compare Opinion modifier.
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1262,7 +1312,9 @@ leave_confederation_decision = {
 
 		# LOW LEGITIMACY
 		modifier = {
-			add = 5
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1271,9 +1323,12 @@ leave_confederation_decision = {
 					has_legitimacy_flag = reduced_vassalization_acceptance
 				}
 			}
+			add = 5
 		}
 		modifier = {
-			add = 10
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1282,9 +1337,12 @@ leave_confederation_decision = {
 					has_legitimacy_flag = very_reduced_vassalization_acceptance
 				}
 			}
+			add = 10
 		}
 		modifier = {
-			add = 20
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1293,11 +1351,14 @@ leave_confederation_decision = {
 					has_legitimacy_flag = massively_reduced_vassalization_acceptance
 				}
 			}
+			add = 20
 		}
 
 		# HIGH LEGITIMACY
 		modifier = {
-			add = -5
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1306,9 +1367,12 @@ leave_confederation_decision = {
 					has_legitimacy_flag = increased_vassalization_acceptance
 				}
 			}
+			add = -5
 		}
 		modifier = {
-			add = -10
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1317,9 +1381,12 @@ leave_confederation_decision = {
 					has_legitimacy_flag = very_increased_vassalization_acceptance
 				}
 			}
+			add = -10
 		}
 		modifier = {
-			add = -25
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1328,21 +1395,27 @@ leave_confederation_decision = {
 					has_legitimacy_flag = extra_increased_vassalization_acceptance
 				}
 			}
+			add = -25
 		}
 
 		# PRESTIGE
 		modifier = {
-			add = 25
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			prestige_level >= 4
+			add = 25
 		}
 		modifier = {
-			add = 25
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			prestige_level >= 5
+			add = 25
 		}
 
 		#CULTURE
 		modifier = {
-			add = -10
 			confederation = {
 				NOT = {
 					any_confederation_member = {
@@ -1352,9 +1425,12 @@ leave_confederation_decision = {
 					}
 				}
 			}
+			add = -10
 		}
 		modifier = {
-			add = 50
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				NOT = {
 					any_confederation_member = {
@@ -1380,19 +1456,16 @@ leave_confederation_decision = {
 					}
 				}
 			}
+			add = 50
 		}
 
 		#Conquerors have no interest in this
 		modifier = {
-			root = {
-				has_trait = conqueror
-			}
+			has_trait = conqueror
 			add = 500
 		}
 		modifier = {
-			root = {
-				has_trait = greatest_of_khans
-			}
+			has_trait = greatest_of_khans
 			add = 500
 		}
 
@@ -1408,49 +1481,49 @@ leave_confederation_decision = {
 
 		#No threat to confederate against
 		modifier = {
-			add = 75
-			root = {
-				NOT = {
-					confederation_foe_trigger = { CHARACTER = root }
-				}
+			trigger = {
+				gdp_is_league_member_trigger = no
 			}
+			NOT = {
+				confederation_foe_trigger = { CHARACTER = root }
+			}
+			add = 75
 		}
 
 		#Has confederation threat
 		modifier = {
-			add = -25
-			root = {
-				confederation_foe_trigger = { CHARACTER = root }
+			trigger = {
+				gdp_is_league_member_trigger = no
 			}
+			confederation_foe_trigger = { CHARACTER = root }
+			add = -25
 		}
 
 		#Neighbor is scaring them
 		modifier = {
 			add = -50
-			root = {
-				any_land_neighboring_realm_with_tributaries_owner = {
-					top_suzerain = {
-						NOR = {
-							this = liege
-							this = top_liege
-						}
-						confederation_worthy_foe_strength_ratio_value_root <= 0.25
-						NOT = { is_allied_to = root }
-						OR = {
-							highest_held_title_tier >= tier_kingdom
-							faith = {
-								faith_hostility_level = {
-									target = root.faith
-									value >= faith_evil_level
-								}
+			any_land_neighboring_realm_with_tributaries_owner = {
+				top_suzerain = {
+					NOR = {
+						this = liege
+						this = top_liege
+					}
+					confederation_worthy_foe_strength_ratio_value_root <= 0.25
+					NOT = { is_allied_to = root }
+					OR = {
+						highest_held_title_tier >= tier_kingdom
+						faith = {
+							faith_hostility_level = {
+								target = root.faith
+								value >= faith_evil_level
 							}
-							has_trait = conqueror
-							has_trait = greatest_of_khans
-							any_owned_story = {
-								OR = {
-									story_type = story_greatest_of_khans
-									story_type = story_mongol_invasion
-								}
+						}
+						has_trait = conqueror
+						has_trait = greatest_of_khans
+						any_owned_story = {
+							OR = {
+								story_type = story_greatest_of_khans
+								story_type = story_mongol_invasion
 							}
 						}
 					}
@@ -1460,40 +1533,41 @@ leave_confederation_decision = {
 
 		#Neighbor is TERRIFYING them
 		modifier = {
-			add = -100
-			root = {
-				any_land_neighboring_realm_with_tributaries_owner = {
-					top_suzerain = {
-						NOR = {
-							this = liege
-							this = top_liege
-						}
-						confederation_worthy_foe_strength_ratio_value_root <= 0.1
-						NOT = { is_allied_to = root }
-						OR = {
-							highest_held_title_tier >= tier_kingdom
-							faith = {
-								faith_hostility_level = {
-									target = root.faith
-									value >= faith_evil_level
-								}
+			any_land_neighboring_realm_with_tributaries_owner = {
+				top_suzerain = {
+					NOR = {
+						this = liege
+						this = top_liege
+					}
+					confederation_worthy_foe_strength_ratio_value_root <= 0.1
+					NOT = { is_allied_to = root }
+					OR = {
+						highest_held_title_tier >= tier_kingdom
+						faith = {
+							faith_hostility_level = {
+								target = root.faith
+								value >= faith_evil_level
 							}
-							has_trait = conqueror
-							has_trait = greatest_of_khans
-							any_owned_story = {
-								OR = {
-									story_type = story_greatest_of_khans
-									story_type = story_mongol_invasion
-								}
+						}
+						has_trait = conqueror
+						has_trait = greatest_of_khans
+						any_owned_story = {
+							OR = {
+								story_type = story_greatest_of_khans
+								story_type = story_mongol_invasion
 							}
 						}
 					}
 				}
 			}
+			add = -100
 		}
 
 		#You have too many vassals
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			save_temporary_scope_as = actor
 			scope:actor.confederation = {
 				any_confederation_member = {
@@ -1548,18 +1622,24 @@ leave_confederation_decision = {
 		}
 
 		modifier = {
-			add = -50
 			has_trait = loyal
+			add = -50
 		}
 		modifier = {
-			add = 50
 			has_trait = disloyal
+			add = 50
 		}
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			has_trait = infirm
 			add = -10
 		}
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					NOT = {
@@ -1572,6 +1652,9 @@ leave_confederation_decision = {
 		}
 		#Confederation has only two
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			confederation = {
 				any_confederation_member = {
 					count <= 2
@@ -1582,10 +1665,16 @@ leave_confederation_decision = {
 		}
 		#Doing great and doesn't need confederation
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			war_chest_gold >= war_chest_gold_maximum
 			add = 25
 		}
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			NOR = {
 				any_land_neighboring_realm_with_tributaries_owner = {
 					NOT = { is_allied_to = root }
@@ -1609,19 +1698,27 @@ leave_confederation_decision = {
 			add = 50
 		}
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			domain_size >= 4
 			add = 15
 		}
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			domain_size >= 5
 			add = 20
 		}
 		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			domain_size >= 6
 			add = 25
 		}
 		modifier = {
-			add = -10
 			culture = {
 				OR = {
 					has_cultural_pillar = ethos_stoic
@@ -1629,9 +1726,9 @@ leave_confederation_decision = {
 					has_cultural_pillar = ethos_egalitarian
 				}
 			}
+			add = -10
 		}
 		modifier = {
-			add = 10
 			culture = {
 				OR = {
 					has_cultural_pillar = ethos_bellicose
@@ -1639,9 +1736,12 @@ leave_confederation_decision = {
 					has_cultural_pillar = ethos_bureaucratic
 				}
 			}
+			add = 10
 		}
 		modifier = {
-			add = 100
+			trigger = {
+				gdp_is_league_member_trigger = no
+			}
 			ai_energy > low_negative_ai_value
 			ai_boldness > low_negative_ai_value
 			NOR = {
@@ -1653,22 +1753,22 @@ leave_confederation_decision = {
 			NOT = {
 				has_character_flag = new_confederate
 			}
+			add = 100
 		}
 		#Recent AI confederates should really not take this
 		modifier = {
-			add = -500
 			has_character_flag = new_confederate
+			add = -500
 		}
 		modifier = {
-			add = -25
 			confederation = {
 				any_confederation_member = {
 					is_primary_heir_of = root
 				}
 			}
+			add = -25
 		}
 		modifier = {
-			add = -50
 			confederation = {
 				any_confederation_member = {
 					root = {
@@ -1676,9 +1776,9 @@ leave_confederation_decision = {
 					}
 				}
 			}
+			add = -50
 		}
 		modifier = {
-			add = -25
 			confederation = {
 				any_confederation_member = {
 					any_spouse = {
@@ -1686,17 +1786,17 @@ leave_confederation_decision = {
 					}
 				}
 			}
+			add = -25
 		}
 		modifier = {
-			add = -25
 			confederation = {
 				any_confederation_member = {
 					is_close_family_of = root
 				}
 			}
+			add = -25
 		}
 		modifier = {
-			add = -20
 			confederation = {
 				any_confederation_member = {
 					any_spouse = {
@@ -1704,9 +1804,9 @@ leave_confederation_decision = {
 					}
 				}
 			}
+			add = -20
 		}
 		modifier = {
-			add = -20
 			confederation = {
 				any_confederation_member = {
 					any_close_family_member = {
@@ -1719,6 +1819,7 @@ leave_confederation_decision = {
 					}
 				}
 			}
+			add = -20
 		}
 		modifier = {
 			desc = "BARANGAY_TRADITION_REASON"
@@ -1728,6 +1829,13 @@ leave_confederation_decision = {
 				}
 			}
 			add = -20
+		}
+		#Trade Leagues should be durable
+		modifier = {
+			trigger = {
+				gdp_is_league_member_trigger = yes
+			}
+			add = -50
 		}
 	}
 }
@@ -1812,10 +1920,13 @@ confederation_kingdom_decision = {
 
 	is_shown = {
 		is_confederation_member = yes
-		is_landed = yes
-		NOT = { exists = confederation.leading_house }
-		is_playable_character = yes
 		exists = confederation
+		is_landed = yes
+		is_playable_character = yes
+		NOR = {
+			exists = confederation.leading_house
+			gdp_is_league_member_trigger = yes
+		}
 		# C&L: Added conditions that will disable this decision based off the chosen game rules
 		NOR = {
 			has_game_rule = CL_allow_elevation_off
@@ -1986,6 +2097,7 @@ confederation_kingdom_decision = {
 		custom_tooltip = confederation_king_modifier_tt
 		custom_tooltip = confederation_vassal_modifier_tt
 		custom_tooltip = confederation_county_modifier_tt
+		# C&L: If the confederation being elevated has some histor
 		if = {
 			limit = {
 				scope:old_confederation = { CL_should_have_confederation_culture_created = yes }
@@ -1999,7 +2111,7 @@ confederation_kingdom_decision = {
 					add_to_list = confederation_vassals
 					every_tributary = {
 						limit = {
-							trigger_if = { # C&L Modified this so that if any member of the confederation is a kingdom (meaning they have the game rules set to allow them into confederations/leagues), then also make kingdom tributaries vassals as well
+							trigger_if = { # C&L: Modified this so that if any member of the confederation is a kingdom (meaning they have the game rules set to allow them into confederations/leagues), then also make kingdom tributaries vassals as well
 								limit = {
 									scope:old_confederation = {
 										any_confederation_member = { highest_held_title_tier = tier_kingdom }
@@ -2007,7 +2119,7 @@ confederation_kingdom_decision = {
 								}
 								highest_held_title_tier <= tier_kingdom
 							}
-							trigger_else = { # C&L Otherwise, if there are no kingdoms in the confederation/league, then only consider up to duchy-tier tributaries
+							trigger_else = { # C&L: Otherwise, if there are no kingdoms in the confederation/league, then only consider up to duchy-tier tributaries
 								highest_held_title_tier <= tier_duchy
 							}
 						}

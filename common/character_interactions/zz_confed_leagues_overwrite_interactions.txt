@@ -2,7 +2,7 @@
 ## From 09_mpo_interactions.txt
 ########################
 # All changes I make here will be noted with comments started by: C&L
-# Up-to-date as of CK3 1.20.1.1
+# Up-to-date as of CK3 1.21.0
 
 offer_confederation_interaction = {
 	category = interaction_category_diplomacy
@@ -42,6 +42,7 @@ offer_confederation_interaction = {
 				}
 			}
 			age >= 6
+			is_imprisoned = no
 		}
 		is_playable_character = yes
 		OR = {
@@ -731,6 +732,7 @@ offer_confederation_interaction = {
 						}
 						has_trait = denounced
 						has_trait = disinherited
+						has_trait = adopted_no_inheritance
 					}
 				}
 			}
@@ -1312,7 +1314,7 @@ offer_confederation_interaction = {
 		}
 		modifier = { #left your confederation
 			add = -50
-			desc = LEFT_YOUR_CONFEDERATION_REASON # C&L: Made description apply to both confederations/leagues
+			desc = LEFT_YOUR_CONFEDERATION_REASON
 			exists = scope:actor.confederation
 			scope:recipient = {
 				has_variable = left_confederation
@@ -1467,7 +1469,7 @@ offer_confederation_interaction = {
 				scope:actor = {
 					custom_tooltip = create_confederation_tt
 					custom_tooltip = confederation_defensive_wars_tt
-					custom_tooltip = unlock_leave_confederation_interaction_tt
+					custom_tooltip = unlock_leave_confederation_decision_tt
 					if = {
 						limit = {
 							government_has_flag = government_is_nomadic
@@ -1522,24 +1524,7 @@ offer_confederation_interaction = {
 				scope:recipient = {
 					custom_tooltip = confederation_raiding_attacking_tt
 					# C&L: Base game only checks if you are Nomadic, and uses a fallback for tribal. I changed it to instead check based off the respective realm law you use
-					if = {
-						limit = {
-							realm_law_use_nomadic_authority = yes
-						}
-						custom_tooltip = confederation_restrictions_warning_tt
-					}
-					else_if = {
-						limit = {
-							realm_law_use_tribal_authority = yes
-						}
-						custom_tooltip = confederation_restrictions_tribe_warning_tt
-					}
-					else_if = {
-						limit = {
-							realm_law_use_crown_authority = yes
-						}
-						custom_tooltip = league_restrictions_crown_authority_warning_tt
-					}
+					CL_federation_realm_law_title_creation_restriction_tooltip_effect = yes
 				}
 			}
 			scope:recipient = {
@@ -1774,7 +1759,7 @@ join_confederation_interaction = {
 	icon = offer_confederation_interaction
 
 	# C&L: Made name change depending on which type of confederation/league recipient is currently in
-	title = {
+	name = {
 		first_valid = {
 			triggered_desc = {
 				trigger = {
@@ -1832,22 +1817,17 @@ join_confederation_interaction = {
 	}
 
 	is_valid_showing_failures_only = {
+		scope:actor = {
 		# C&L: Changed this so it properly checks you are a valid member for the recipient's confederation/league
 		trigger_if = {
 			limit = {
 				scope:recipient.confederation = { confederation_type = confederation_type:defensive_league_type }
 			}
-
-			scope:actor = {
-				valid_defensive_league_member_trigger = { CHARACTER = scope:recipient }
-			}
+			valid_defensive_league_member_trigger = { CHARACTER = scope:recipient }
 		}
 		trigger_else = {
-			scope:actor = {
-				valid_confederation_member_trigger = { CHARACTER = scope:recipient }
-			}
+			valid_confederation_member_trigger = { CHARACTER = scope:recipient }
 		}
-		scope:actor = {
 			is_imprisoned = no
 			is_at_war = no
 			NOR = {
@@ -2365,6 +2345,7 @@ join_confederation_interaction = {
 						}
 						has_trait = denounced
 						has_trait = disinherited
+						has_trait = adopted_no_inheritance
 					}
 				}
 			}
@@ -2584,7 +2565,7 @@ join_confederation_interaction = {
 		}
 		modifier = {
 			add = 20
-			desc = join_confederation_neighboring_foe_tt # C&L: Changed this tooltip localization to apply to both confederations/leagues
+			desc = join_confederation_neighboring_foe_tt
 			scope:recipient = {
 				confederation_neighboring_foe_trigger = { CHARACTER = scope:recipient }
 			}
@@ -2592,7 +2573,7 @@ join_confederation_interaction = {
 		#No neighbor scaring them
 		modifier = {
 			add = -30
-			desc = NO_FRIGHTENING_NEIGHBOR_REASON # C&L: Changed this localization to apply to both Confederations and Leagues
+			desc = NO_FRIGHTENING_NEIGHBOR_REASON
 			NOT = {
 				scope:recipient = {
 					confederation_neighboring_foe_trigger = { CHARACTER = scope:recipient }
@@ -2636,7 +2617,7 @@ join_confederation_interaction = {
 		}
 		modifier = {
 			add = 100
-			desc = JOINING_CONFEDERATION_WAR_REASON # C&L: Changed this tooltip localization to apply to both confederations/leagues
+			desc = JOINING_CONFEDERATION_WAR_REASON
 			scope:recipient.confederation ?= {
 				any_confederation_member = {
 					is_at_war_as_defender = yes
@@ -2662,7 +2643,7 @@ join_confederation_interaction = {
 
 		modifier = {
 			add = -100
-			desc = join_confederation_abandoned_confederation_tt # C&L: Changed this tooltip localization to apply to both confederations/leagues
+			desc = join_confederation_abandoned_confederation_tt
 			scope:actor = {
 				has_variable = left_confederation
 				var:left_confederation ?= {
@@ -2672,7 +2653,7 @@ join_confederation_interaction = {
 		}
 		modifier = {
 			add = duchy_confederation_vassals_value_recipient
-			desc = TOO_MANY_CONFEDERATION_VASSALS_REASON # C&L: Changed this localization to apply to both Confederations and Leagues
+			desc = TOO_MANY_CONFEDERATION_VASSALS_REASON
 			scope:recipient.confederation ?= {
 				any_confederation_member = {
 					count >= 6
@@ -2809,7 +2790,7 @@ join_confederation_interaction = {
 					}
 					else = {
 						custom_tooltip = confederation_defensive_wars_tt
-						custom_tooltip = unlock_leave_confederation_interaction_tt
+						custom_tooltip = unlock_leave_confederation_decision_tt
 					}
 				}
 			}
@@ -2847,24 +2828,7 @@ join_confederation_interaction = {
 						custom_tooltip = confederation_raiding_attacking_tt
 					}
 					# C&L: Base game only checks if you are Nomadic, and uses a fallback for tribal. I changed it to instead check based off the respective realm law you use
-					if = {
-						limit = {
-							realm_law_use_nomadic_authority = yes
-						}
-						custom_tooltip = confederation_restrictions_warning_tt
-					}
-					else_if = {
-						limit = {
-							realm_law_use_tribal_authority = yes
-						}
-						custom_tooltip = confederation_restrictions_tribe_warning_tt
-					}
-					else_if = {
-						limit = {
-							realm_law_use_crown_authority = yes
-						}
-						custom_tooltip = league_restrictions_crown_authority_warning_tt
-					}
+					CL_federation_realm_law_title_creation_restriction_tooltip_effect = yes
 				}
 			}
 			scope:actor = {

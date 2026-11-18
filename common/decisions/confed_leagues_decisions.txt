@@ -3,8 +3,9 @@ call_for_league_decision = {
 	picture = {
 		reference = "gfx/interface/illustrations/decisions/mpo_decision_confederation.dds"
 	}
-	decision_group_type = major
-	
+	decision_group_type = realm
+	sort_order = 20
+
 	ai_check_interval_by_tier = {
 		barony = 0
 		county = 8
@@ -19,14 +20,14 @@ call_for_league_decision = {
 	confirm_text = call_for_confederation_decision_confirm
 
 	is_shown = {
-		is_independent_ruler = yes
-		CL_uses_leagues = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for defensive leagues
 		CL_has_appropriate_title_tier = yes # C&L: Changed this from allowing just duchies and below to instead changing depending on what game rule the player has set
-		NOR = {
-			is_confederation_member = yes
-			has_character_flag = forming_confederation
-		}
+		CL_uses_leagues = yes # C&L: Base game just checks if you are Tribal/Nomadic. Changed it to check that you have any of the valid governments for defensive leagues
 		is_playable_character = yes
+		is_independent_ruler = yes
+		NOR = {
+			has_character_flag = forming_confederation
+			is_confederation_member = yes
+		}
 	}
 
 	is_valid = {
@@ -161,6 +162,15 @@ call_for_league_decision = {
 		is_playable_character = yes
 		is_confederation_member = no
 		is_alive = yes
+		CL_has_appropriate_realm_laws = yes # C&L: Base game just checks if you have Nomadic government, and fallsback to assuming you are Tribal. I changed it so that it now checks what realm law you use, and makes sure you only have the relevant laws
+		NOR = {
+			has_trait = conqueror
+			has_trait = greatest_of_khans
+			has_trait = infirm
+		}
+		age >= 6
+		is_available = yes
+		is_migrating = no
 		#Culture friends # C&L: This requires that the AI has at least two neighbors of the same culture who either: have the same faith; also have unreformed faiths; or whose faith doesn't view their own faith as Hostile/Evil. Might add an alternative to this so that they don't need to same-culture neighbors as long as their neighbors have the same faith with certain tenants, so they could maybe form a faith-based confederation/league instead of a culture-based one. (Will likely also need to make the below neighbor check inside its own scripted trigger so that it could be referenced later when deciding whether to make the confederations/leagues culture- or faith-based)
 		any_land_neighboring_realm_with_tributaries_owner = {
 			count >= 2

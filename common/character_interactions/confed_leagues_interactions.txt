@@ -39,6 +39,7 @@ offer_league_interaction = {
 				}
 			}
 			age >= 6
+			is_imprisoned = no
 		}
 		is_playable_character = yes
 		OR = {
@@ -726,6 +727,7 @@ offer_league_interaction = {
 						}
 						has_trait = denounced
 						has_trait = disinherited
+						has_trait = adopted_no_inheritance
 					}
 				}
 			}
@@ -1521,24 +1523,7 @@ offer_league_interaction = {
 					# C&L: Made tooltip better match defensive leagues
 					custom_tooltip = league_raiding_attacking_tt
 					# C&L: Base game only checks if you are Nomadic, and uses a fallback for tribal. I changed it to instead check based off the respective realm law you use
-					if = {
-						limit = {
-							realm_law_use_nomadic_authority = yes
-						}
-						custom_tooltip = confederation_restrictions_warning_tt
-					}
-					else_if = {
-						limit = {
-							realm_law_use_tribal_authority = yes
-						}
-						custom_tooltip = confederation_restrictions_tribe_warning_tt
-					}
-					else_if = {
-						limit = {
-							realm_law_use_crown_authority = yes
-						}
-						custom_tooltip = league_restrictions_crown_authority_warning_tt
-					}
+					CL_federation_realm_law_title_creation_restriction_tooltip_effect = yes
 				}
 			}
 			scope:recipient = {

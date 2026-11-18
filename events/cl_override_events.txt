@@ -1,0 +1,1779 @@
+﻿# This file contains the specific events being overridden by this mod
+# All changes I make here will be noted with comments started by: C&L
+# Up-to-date as of CK3 1.21.0
+
+#############
+## From events\dlc\mpo\mpo_interactions_events.txt
+#############
+namespace = mpo_interactions_events
+
+#Handles effects of offer confederation and assigns events
+mpo_interactions_events.0001 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	hidden = yes
+
+	trigger = {
+		scope:actor = {
+			is_ruler = yes
+			is_landed = yes
+		}
+		scope:recipient = {
+			is_ruler = yes
+			is_landed = yes
+		}
+	}
+
+	immediate = {
+		#Confederation doesn't exist and actor is becoming liege
+		if = {
+			limit = {
+				scope:actor = {
+					is_confederation_member = no
+				}
+			}
+			scope:actor = {
+				CL_determine_name = yes # C&L: The base game determines whether the confederation being made will be culture-based or named after a duchy here. Because of the Confederation/League split, I moved the naming and creation of the confederation into its own scripted_effect here
+				scope:recipient = {
+					save_scope_as = other_confederate
+				}
+				trigger_event = {
+					id = mpo_interactions_events.0002
+					days = 1
+				}
+			}
+			scope:new_confederation = {
+				add_confederation_member = scope:recipient
+			}
+		}
+		#Confederation already exists
+		else = {
+			scope:actor.confederation = {
+				add_confederation_member = scope:recipient
+			}
+			#letter event
+			scope:actor = {
+				trigger_event = {
+					id = mpo_interactions_events.0003
+					days = 1
+				}
+			}
+		}
+		#Vassal event
+		scope:actor = {
+			save_scope_as = other_confederate
+		}
+		scope:recipient = {
+			trigger_event = {
+				id = mpo_interactions_events.0002
+				days = 1
+			}
+		}
+	}
+}
+
+#Confederation event
+mpo_interactions_events.0002 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	theme = vassal
+	title = mpo_interactions_events.0002.t
+	desc = {
+		desc = mpo_interactions_events.0002.desc
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					exists = scope:new_confederation
+				}
+				desc = mpo_interactions_events.0002.desc_new
+			}
+			desc = mpo_interactions_events.0002.desc_joining
+		}
+	} 
+	override_background = {
+		reference = bp1_bonfire
+	}
+	override_effect_2d = {
+		reference = smoke
+	}
+	left_portrait = {
+		character = root
+		animation = marshal_dagger
+		camera = camera_event_very_left
+	}
+	right_portrait = {
+		character = scope:other_confederate
+		animation = marshal_dagger
+		camera = camera_event_very_right
+	}
+	immediate = {
+		confederation = {
+			save_scope_as = confederation
+		}
+		if = {
+			limit = {
+				exists = scope:new_confederation
+			}
+			custom_tooltip = new_confederation_created_tt
+		}
+		else = {
+			custom_tooltip = joined_confederation_tt
+		}
+		# C&L: Made tooltips shown here properly reflect what type of confederation/league you are now in
+		if = {
+			limit = {
+				confederation = { confederation_type = confederation_type:defensive_league_type }
+			}
+			custom_tooltip = league_defensive_wars_tt
+			custom_tooltip = unlock_leave_league_interaction_tt
+			custom_tooltip = league_raiding_attacking_tt
+		}
+		else = {
+			custom_tooltip = confederation_defensive_wars_tt
+			custom_tooltip = unlock_leave_confederation_decision_tt
+			custom_tooltip = confederation_raiding_attacking_tt
+		}
+		show_as_tooltip = {
+			if = {
+				limit = {
+					government_has_flag = government_is_nomadic
+				}
+				add_character_modifier = {
+					modifier = mpo_confederation_member_modifier
+					years = 5
+				}
+				capital_county ?= {
+					change_county_fertility = major_county_fertility_level_gain
+				}
+			}
+		}
+		# C&L: Base game only checks if you are Nomadic, and uses a fallback for tribal. I changed it to instead check based off the respective realm law you use
+		CL_federation_realm_law_title_creation_restriction_tooltip_effect = yes
+		if = {
+			limit = {
+				government_has_flag = government_is_nomadic
+			}
+			custom_tooltip = confederation_migrating_leaving_warning_tt
+		}
+	}
+	#Accept
+	option = {
+		name = mpo_interactions_events.0002.a
+	}
+}
+
+#Confderation rejection letter event
+mpo_interactions_events.0004 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = letter_event
+	sender = scope:recipient
+	opening = {
+		desc = mpo_interactions_events.0004.opening
+	}
+	desc = {
+		desc = mpo_interactions_events.0004.desc
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					exists = scope:asking_to_join
+				}
+				desc = mpo_interactions_events.0004.desc_join
+			}
+			triggered_desc = { # C&L: Added this as an alternative description for if the character refuses to form a defensive league
+				trigger = {
+					NOT = { exists = scope:asking_to_join }
+					scope:recipient = { CL_uses_leagues = yes }
+				}
+				desc = mpo_interactions_events.0004.desc_offer_league
+			}
+			desc = mpo_interactions_events.0004.desc_offer
+		}
+	}
+
+	#Accept
+	option = {
+		name = mpo_interactions_events.0004.a
+	}
+}
+
+
+#############
+## From events\dlc\mpo\mpo_decisions_events.txt
+#############
+namespace = mpo_decisions_events
+
+#Confederation planning event
+mpo_decisions_events.0001 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	title = { # C&L: Made title change depending on what government you have
+		first_valid = {
+			triggered_desc = {
+				trigger = { scope:new_CL_type ?= flag:defensive_league }
+				desc = mpo_decisions_events.0001.t_league
+			}
+			desc = mpo_decisions_events.0001.t_confederation
+		}
+	}
+	desc = { # C&L: Made description change depending on what government you have
+		first_valid = {
+			triggered_desc = {
+				trigger = { scope:new_CL_type ?= flag:defensive_league }
+				desc = mpo_decisions_events.0001.desc_league
+			}
+			desc = mpo_decisions_events.0001.desc_confederation
+		}
+	}
+	theme = vassal
+	override_background = { reference = wilderness }
+	left_portrait = {
+		character = root
+		animation = inspect_weapon
+	}
+	right_portrait = {
+		character = scope:warrior
+		animation = throne_room_two_handed_passive_shield
+		camera = camera_event_right_forward # C&L: Base game's camera angle had them looking away, which was a little weird
+	}
+	lower_right_portrait = scope:threat
+
+	immediate = {
+		random_knight = {
+			limit = {
+				is_imprisoned = no
+				is_incapable = no
+				is_playable_character = no
+			}
+			save_scope_as = warrior
+			add_character_flag = need_military_outfit
+		}
+		if = {
+			limit = {
+				NOT = {
+					exists = scope:warrior
+				}
+			}
+			random_courtier = {
+				limit = {
+					is_available_allow_travelling = yes
+					is_adult = yes
+					can_be_combatant_based_on_gender_trigger = { ARMY_OWNER = root }
+					age <= 55
+				}
+				save_scope_as = warrior
+				add_character_flag = need_military_outfit
+			}
+		}
+		if = {
+			limit = {
+				any_land_neighboring_realm_with_tributaries_owner = {
+					mpo_decisions_events_0001_threat_trigger = yes
+				}
+			}
+			ordered_land_neighboring_realm_with_tributaries_owner = {
+				order_by = current_military_strength
+				limit = {
+					mpo_decisions_events_0001_threat_trigger = yes
+				}
+				save_scope_as = threat
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = {
+					exists = scope:threat
+				}
+			}
+			ordered_land_neighboring_realm_with_tributaries_owner = {
+				order_by = current_military_strength
+				limit = {
+					is_tributary = yes
+					suzerain ?= {
+						mpo_decisions_events_0001_threat_trigger = yes
+					}
+				}
+				suzerain = {
+					save_scope_as = threat
+				}
+			}
+		}
+		else_if = {
+			limit = {
+				NOT = {
+					exists = scope:threat
+				}
+			}
+			ordered_land_neighboring_realm_with_tributaries_owner = {
+				order_by = current_military_strength
+				limit = {
+					is_tributary = yes
+					top_suzerain ?= {
+						mpo_decisions_events_0001_threat_trigger = yes
+					}
+				}
+				top_suzerain = {
+					save_scope_as = threat
+				}
+			}
+		}
+		else = {
+			capital_county = {
+				kingdom = { 
+					random_de_jure_county = {
+						limit = {
+							holder.top_liege = {
+								mpo_decisions_events_0001_threat_trigger = yes
+							}
+						}
+						holder.top_liege = {
+							save_scope_as = threat
+						} 
+					}
+				}
+			}
+		}
+		if = {
+			limit = {
+				NOT = {
+					exists = scope:threat
+				}
+			}
+			ordered_land_neighboring_realm_with_tributaries_owner = {
+				order_by = current_military_strength
+				limit = {
+					NOT = { is_allied_to = root }
+				}
+				save_scope_as = threat
+			}
+		}
+		if = {
+			limit = {
+				exists = scope:threat
+				any_realm_county = {
+					is_landless_type_title = no
+					kingdom = {
+						any_de_jure_county = {
+							holder.top_liege = scope:threat
+						}
+					}
+				}
+			}
+			random_realm_county = {
+				limit = {
+					is_landless_type_title = no
+					kingdom = {
+						any_de_jure_county = {
+							holder.top_liege = scope:threat
+						}
+					}
+				}
+				kingdom = { save_scope_as = home_kingdom }
+			}
+			
+		}
+		else = {
+			capital_county.kingdom = {
+				save_scope_as = home_kingdom
+			}
+		}
+	}
+
+	option = {
+		name = mpo_decisions_events.0001.a
+
+		if = { # C&L: Made tooltips shown reflect whether you will be forming a League or Confederation
+			limit = { scope:new_CL_type ?= flag:defensive_league }
+			custom_tooltip = enables_offer_league_tt
+			custom_tooltip = offer_league_members_tt
+			custom_tooltip = offer_league_5_year_warning_tt
+		}
+		else = {
+			custom_tooltip = enables_offer_confederation_tt
+			custom_tooltip = offer_confederation_members_tt
+			custom_tooltip = offer_confederation_5_year_warning_tt
+		}
+		
+		add_character_flag = {
+			flag = forming_confederation
+			years = 5
+		}
+	}
+	#opt out
+	option = {
+		trigger = {
+			is_ai = no
+		}
+		name = mpo_decisions_events.0001.b
+		remove_decision_cooldown = call_for_confederation_decision
+	}
+	after = {
+		scope:warrior ?= {
+			remove_character_flag = need_military_outfit
+		}
+	}
+}
+
+#Leave confederation event for leaver
+mpo_decisions_events.0002 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	title = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { scope:leaving_trade_league ?= yes }
+				desc = mpo_decisions_events.0002.t_league
+			}
+			# C&L: Added specific title for Defensive Leagues
+			triggered_desc = {
+				trigger = { scope:old_CL_type ?= flag:defensive_league }
+				desc = mpo_decisions_events.0002.t_defensive_league
+			}
+			desc = mpo_decisions_events.0002.t # C&L: Fallsback to assuming you were in a Confederation
+		}
+	}
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = { scope:leaving_trade_league ?= yes }
+				desc = mpo_decisions_events.0002.desc_league
+			}
+			desc = mpo_decisions_events.0002.desc
+		}
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					scope:leaving_trade_league ?= yes
+					exists = scope:confederation
+					scope:confederation = {
+						any_confederation_member = {
+							count >= 2
+							NOT = {
+								this = root
+							}
+						}
+					}
+				}
+				desc = mpo_decisions_events.0002.desc_league_survives
+			}
+			triggered_desc = {
+				trigger = {
+					scope:old_CL_type ?= flag:confederation # C&L: Checking if what you are leaving is a confederation
+					exists = scope:confederation
+					scope:confederation = {
+						any_confederation_member = {
+							count >= 2
+							NOT = {
+								this = root
+							}
+						}
+					}
+				}
+				desc = mpo_decisions_events.0002.desc_confederation_survives
+			}
+			# C&L: Added this option in case you were in a Defensive League and it remains
+			triggered_desc = {
+				trigger = {
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
+					exists = scope:confederation
+					scope:confederation = {
+						any_confederation_member = {
+							count >= 2
+							NOT = {
+								this = root
+							}
+						}
+					}
+				}
+				desc = mpo_decisions_events.0002.desc_defensive_league_survives
+			}
+			triggered_desc = {
+				trigger = { scope:leaving_trade_league ?= yes }
+				desc = mpo_decisions_events.0002.desc_league_done
+			}
+			# C&L: Added this option in case you were in a Defensive League and it disbanded
+			triggered_desc = {
+				trigger = {
+					scope:other_confederate = { is_confederation_member = no }
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
+				}
+				desc = mpo_decisions_events.0002.desc_defensive_league_done
+			}
+			desc = mpo_decisions_events.0002.desc_confederation_done # C&L: Fallsback to assuming you were in a Confederation and it disbanded
+		}
+	}
+	theme = vassal
+	left_portrait = {
+		character = root
+		animation = dismissal
+	}
+	right_portrait = {
+		character = scope:other_confederate
+		animation = disappointed
+		camera = camera_event_right_forward
+	}
+
+	immediate = {
+		ordered_in_list = {
+			order_by = max_military_strength
+			list = confederation_members
+			save_scope_as = other_confederate
+		}
+		scope:confederation = {
+			if = {
+				limit = { confederation_type = confederation_type:trade_league }
+				save_scope_value_as = {
+					name = leaving_trade_league
+					value = yes
+				}
+			}
+			leave_confederation_membership_effect = { LEAVER = root }
+		}
+		if = {
+			limit = {
+				government_has_flag = government_is_nomadic
+			}
+			show_as_tooltip = {
+				remove_character_modifier = mpo_confederation_member_modifier
+			}
+		}
+		if = {
+			limit = { scope:leaving_trade_league ?= yes }
+			custom_tooltip = trade_league_member_lose_opinion_tt
+			hidden_effect = {
+				every_in_list = {
+					list = confederation_members
+					limit = { is_alive = yes }
+					add_opinion = {
+						modifier = turncoat_opinion
+						target = root
+						opinion = -20
+					}
+				}
+			}
+		}
+		else = {
+			every_in_list = {
+				list = confederation_members
+				limit = { is_alive = yes }
+				custom = custom.every_confederation_member
+				add_opinion = {
+					modifier = turncoat_opinion
+					target = root
+					opinion = -20
+				}
+			}
+		}
+	}
+
+	#Bye
+	option = {
+		name = mpo_decisions_events.0002.a
+		every_in_list = {
+			list = confederation_members
+			trigger_event = mpo_decisions_events.0003
+		}
+	}
+}
+
+#Leave confederation event for other members
+mpo_decisions_events.0003 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	title = { # C&L: Made title change depending on whether you were in a confederation or a league
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
+				}
+				desc = mpo_decisions_events.0003.t_league
+			}
+			desc = mpo_decisions_events.0003.t # C&L: Fallsback to assuming it was a Confederation instead
+		}
+	}
+	desc = {
+		first_valid = { # C&L: Changed main event description paragraph to change depending on whether you'd be in a League or Confederation
+			triggered_desc = {
+				trigger = {
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
+				}
+				desc = mpo_decisions_events.0003.desc_league
+			}
+			desc = mpo_decisions_events.0003.desc # C&L: Fallsback to assuming it was a Confederation instead
+		}
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					is_confederation_member = yes
+				}
+				desc = mpo_decisions_events.0003.desc_confederation_survives
+			}
+			triggered_desc = { # C&L: Added this option incase you were likely in a League and it got disbanded
+				trigger = {
+					is_confederation_member = no
+					scope:old_CL_type ?= flag:defensive_league # C&L: Checking if what you are leaving is a defensive league
+				}
+				desc = mpo_decisions_events.0003.desc_league_done
+			}
+			desc = mpo_decisions_events.0003.desc_confederation_done
+		}
+	}
+	theme = vassal
+	left_portrait = {
+		character = root
+		animation = war_defender
+	}
+	right_portrait = {
+		character = scope:leaver
+		animation = menacing
+	}
+
+	immediate = {
+		if = {
+			limit = {
+				is_confederation_member = yes
+			}
+			custom_tooltip = leaver_left_confederation_tt
+		}
+		else_if = { # C&L: Added this option to show that it was likely a Defensive League that was destroyed
+			limit = {
+				scope:old_CL_type ?= flag:defensive_league
+			}
+			custom_tooltip = leaver_destroyed_league_tt
+		}
+		else = {
+			custom_tooltip = leaver_destroyed_confederation_tt
+		}
+	}
+
+	#See ya later, I guess. Douchebag
+	option = {
+		name = mpo_decisions_events.0003.a
+	}
+}
+
+#Confederation elevated - vassal
+mpo_decisions_events.0004 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	title = mpo_decisions_events.0004.t
+	desc = {
+		desc = mpo_decisions_events.0004.desc
+		# C&L: Made the description have optional parts that trigger if a new culture was created based off historical confederations/leagues
+		## C&L: Character follows new culture
+		triggered_desc = {
+			trigger = {
+				exists = scope:new_culture
+				culture = scope:new_culture
+			}
+			desc = mpo_decisions_events.0005.desc_new_culture
+		}
+		## C&L: Character doesn't follow new culture
+		triggered_desc = {
+			trigger = {
+				exists = scope:new_culture
+				NOT = { culture = scope:new_culture }
+			}
+			desc = mpo_decisions_events.0004.desc_new_culture
+		}
+	}
+	theme = vassal
+	override_background = { reference = courtyard }
+	left_portrait = {
+		character = root
+		animation = obsequious_bow
+		camera = camera_event_horse_left_forward
+	}
+	right_portrait = {
+		character = scope:new_king_ruler
+		animation = jockey_wave
+		camera = camera_event_horse_right
+	}
+
+	immediate = {
+		
+	}
+
+	option = {
+		name = mpo_decisions_events.0004.a
+		add_character_modifier = {
+			modifier = confederate_vassal_modifier
+		}
+	}
+
+	option = {
+		name = mpo_decisions_events.0004.b
+		trigger = {
+			is_ai = no
+		}
+		create_title_and_vassal_change = {
+			type = independency
+			save_scope_as = change
+		}
+		becomes_independent = { change = scope:change }
+		resolve_title_and_vassal_change = scope:change
+	}
+}
+
+#Confederation elevated - king
+mpo_decisions_events.0005 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	title = mpo_decisions_events.0005.t
+	desc = {
+		desc = mpo_decisions_events.0005.desc
+		# C&L: Made the description have optional parts that trigger if a new culture was created based off historical confederations/leagues
+		triggered_desc = {
+			trigger = {
+				exists = scope:new_culture
+				culture = scope:new_culture
+			}
+			desc = mpo_decisions_events.0005.desc_new_culture
+		}
+	}
+	theme = crown
+	override_background = { reference = courtyard }
+	left_portrait = {
+		character = scope:new_king_ruler
+		animation = standing_horse
+		camera = camera_event_standing_with_horse_left
+	}
+	right_portrait = {
+		character = scope:vassal
+		animation = throne_room_kneel_1
+		camera = camera_event_right_to_the_right
+	}
+
+	immediate = {
+		ordered_vassal = {
+			order_by = "opinion(root)"
+			limit = {
+				age > 5
+				basic_is_available_ai = yes
+			}
+			save_scope_as = vassal
+		}
+	}
+
+	option = {
+		name = mpo_decisions_events.0005.a
+		add_character_modifier = {
+			modifier = confederate_king_modifier
+			years = 15
+		}
+		every_sub_realm_county = {
+			custom = custom.every_realm_county
+			add_county_modifier = {
+				modifier = confederate_lands_modifier
+				years = 30
+			}
+		}
+	}
+}
+
+
+#############
+## From events\decisions_events\mpo_greatest_of_khans_events.txt
+#############
+namespace = mpo_greatest_of_khans
+
+scripted_trigger mpo_greatest_of_khans_0002_confederation_trigger = {
+	is_confederation_member = yes
+	confederation = { # C&L: Adding this condition that makes sure that the confederation/league the neighboring ruler is in is actually joinable
+		OR = {
+			AND = {
+				confederation_type = confederation_type:nomadic_confederation
+				scope:searching_for_confed = { CL_uses_confederations = yes }
+			}
+			AND = {
+				confederation_type = confederation_type:defensive_league_type
+				scope:searching_for_confed = { CL_uses_leagues = yes }
+			}
+		}
+	}
+	#Prev be with you
+	NOR = {
+		has_relation_rival = prev
+		is_at_war_with = prev
+		is_causing_raid_hostility_towards = prev
+		prev = {
+			is_causing_raid_hostility_towards = prev
+		}
+		opinion = {
+			target = prev
+			value <= -50
+		}
+		reverse_opinion = {
+			target = prev
+			value <= -50
+		}
+	}
+}
+
+#Someone became Greatest of Khans
+mpo_greatest_of_khans.0002 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	window = fullscreen_event
+	queue_icon = "gfx/interface/icons/situation_types/the_great_steppe.dds"
+	title = mongol_invasion.1002.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					OR = {
+						any_realm_province = {
+							OR = {
+								geographical_region = special_mongol_empire_start_region
+								geographical_region = special_mongol_empire_conquest_region_prio_1
+								geographical_region = special_mongol_empire_conquest_region_prio_1_alpha
+							}
+						}
+						NOT = {
+							government_has_flag = government_is_nomadic
+						}
+					}
+				}
+				desc = {
+					desc = mongol_invasion.1002.desc.close
+					first_valid = {
+						triggered_desc = {
+							trigger = {
+								any_realm_province = {
+									geographical_region = special_mongol_empire_start_region
+								}
+							}
+							desc = mongol_invasion.1002.desc.close_mongolia
+						}
+						desc = mongol_invasion.1002.desc.close_steppes
+					}
+					desc = mongol_invasion.1002.desc.close.mid
+					#Great Khan or Genghis?
+					first_valid = {
+						triggered_desc = {
+							trigger = {
+								exists = scope:temujin
+							}
+							desc = mongol_invasion.1002.desc.genghis
+						}
+						desc = mongol_invasion.1002.desc.gok
+					}
+					desc = mongol_invasion.1002.desc.close.end
+				}
+			}
+			desc = mongol_invasion.1002.desc.far_intro
+			first_valid = {
+				triggered_desc = {
+					trigger = {
+						exists = scope:temujin
+						root = scope:temujin
+					}
+					desc = mongol_invasion.1002.desc.genghis
+				}
+				desc = mongol_invasion.1002.desc.gok
+			}
+			desc = mongol_invasion.1002.desc.far
+		}
+	}
+	theme = nomads
+	left_portrait = {
+		character = scope:genghis_khan
+		animation = personality_vengeful
+	}
+	override_background = { reference = mpo_fullscreen_greatest_of_khans }
+
+	immediate = {
+		play_music_cue = mx_cue_conquest_of_the_golden_horde
+		show_as_tooltip = {
+			scope:genghis_khan = {
+				add_trait_force_tooltip = greatest_of_khans
+				form_the_greatest_khan_empire_effect = yes
+				custom_tooltip = gok_threatening_powers_tt
+				custom_tooltip = mongol_invasion.1002.genghis_khan_tt
+				custom_tooltip = gok_time_limit_end_decision_other_players_tt
+				mpo_add_golden_lineage_effect = yes
+			}
+			if = {
+				limit = {
+					OR = {
+						government_has_flag = government_is_nomadic
+						has_trait = nomadic_philosophy
+					}
+				}
+				custom_tooltip = become_gok_decision_now_unavailable_tt
+			}
+		}
+
+		save_scope_as = searching_for_confed # C&L: Need this to properly use changes added to mpo_greatest_of_khans_0002_confederation_trigger
+
+		#Save confederation if there is one
+		if = {
+			limit = {
+				any_land_neighboring_realm_with_tributaries_owner = {
+					mpo_greatest_of_khans_0002_confederation_trigger = yes
+					save_temporary_scope_as = confed_buddy
+				}
+				# C&L: Made this properly check if character is a valid member for confed_buddy's confederation/league
+				trigger_if = {
+					limit = {
+						scope:confed_buddy.confederation ?= { confederation_type = confederation_type:nomadic_confederation }
+					}
+					valid_confederation_member_trigger = { CHARACTER = scope:confed_buddy }
+				}
+				trigger_else_if = {
+					limit = {
+						scope:confed_buddy.confederation ?= { confederation_type = confederation_type:defensive_league_type }
+					}
+					valid_defensive_league_member_trigger = { CHARACTER = scope:confed_buddy }
+				}
+				is_at_war = no
+			}
+			ordered_land_neighboring_realm_with_tributaries_owner = {
+				order_by = current_military_strength
+				limit = {
+					mpo_greatest_of_khans_0002_confederation_trigger = yes
+				}
+				save_scope_as = confederation_neighbor
+				confederation = {
+					save_scope_as = confederation
+				}
+			}
+		}
+	}
+	#Submit to the Great Khan if you're already their tributary anyway
+	option = {
+		trigger = {
+			NOR = {
+				is_vassal_or_below_of = scope:genghis_khan
+				is_at_war_with = scope:genghis_khan
+			}
+			is_tributary_of_suzerain_or_above = scope:genghis_khan
+		}
+		name = mpo_greatest_of_khans.0002.a
+		#tributary of great khan's vassal or below
+		if = {
+			limit = {
+				is_tributary_of_suzerain_or_above = scope:genghis_khan
+				suzerain = {
+					highest_held_title_tier > root.highest_held_title_tier
+				}
+			}
+			suzerain = {
+				save_scope_as = new_liege
+			}
+			create_title_and_vassal_change = {
+				type = swear_fealty
+				save_scope_as = change
+			}
+			change_liege = {
+				liege = scope:new_liege
+				change = scope:change
+			}
+			resolve_title_and_vassal_change = scope:change
+		}
+		else = {
+			create_title_and_vassal_change = {
+				type = swear_fealty
+				save_scope_as = change
+			}
+			change_liege = {
+				liege = scope:genghis_khan
+				change = scope:change
+			}
+			resolve_title_and_vassal_change = scope:change
+		}
+
+		stress_and_fulfillment_impact = {
+			brave = minor_stress_impact_gain
+			stubborn = minor_stress_impact_gain
+		}
+		ai_chance = {
+			base = 200
+			ai_value_modifier = {
+				ai_boldness = 1
+			}
+			modifier = {
+				has_trait = ambitious
+				add = -20
+			}
+			modifier = {
+				has_dread_level_towards = {
+					target = scope:genghis_khan
+					level >= 1
+				}
+				add = 100
+			}
+			modifier = {
+				has_dread_level_towards = {
+					target = scope:genghis_khan
+					level >= 2
+				}
+				add = 200
+			}
+			modifier = {
+				government_has_flag = government_is_herder
+				add = 1000
+			}
+			modifier = {
+				add = 50
+				opinion = {
+					target = scope:genghis_khan
+					value >= 50
+				}
+			}
+			modifier = {
+				add = 50
+				opinion = {
+					target = scope:genghis_khan
+					value >= 75
+				}
+			}
+			modifier = {
+				add = -50
+				opinion = {
+					target = scope:genghis_khan
+					value <= -50
+				}
+			}
+			modifier = {
+				add = -50
+				opinion = {
+					target = scope:genghis_khan
+					value <= -75
+				}
+			}
+		}
+	}
+	#Join a confederation that's next to me
+	option = {
+		trigger = {
+			exists = scope:confederation
+		}
+		name = mpo_greatest_of_khans.0002.b
+		scope:confederation = { add_confederation_member = root }
+		scope:confederation_neighbor = {
+			if = {
+				limit = {
+					is_at_war = yes
+				}
+				every_character_war = {
+					limit = {
+						primary_defender = {
+							is_member_of_confederation = scope:confederation
+						}
+					}
+					add_defender = root
+				}
+			}
+		}
+		if = {
+			limit = {
+				government_has_flag = government_is_nomadic
+			}
+			add_character_modifier = {
+				modifier = mpo_confederation_member_modifier
+				years = 5
+			}
+			capital_county ?= {
+				change_county_fertility = major_county_fertility_level_gain
+			}
+		}
+		stress_and_fulfillment_impact = {
+			ambitious = minor_stress_impact_gain
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				add = 50
+				opinion = {
+					target = scope:confederation_neighbor
+					value > 50
+				}
+			}
+			modifier = {
+				add = 50
+				opinion = {
+					target = scope:confederation_neighbor
+					value > 0
+				}
+			}
+			modifier = {
+				add = -50
+				opinion = {
+					target = scope:confederation_neighbor
+					value < -25
+				}
+			}
+			modifier = {
+				add = -50
+				opinion = {
+					target = scope:confederation_neighbor
+					value < -75
+				}
+			}
+			modifier = {
+				has_trait = ambitious
+				add = -50
+			}
+		}
+	}
+	#Cry (unless you are vassal of the Khan!)
+	option = {
+		name = {
+			trigger = {
+				NOT = {
+					government_has_flag = government_is_nomadic
+				}
+			}
+			text = mongol_invasion.1002.b
+		}
+		name = {
+			trigger = {
+				government_has_flag = government_is_nomadic
+			}
+			text = mongol_invasion.1002.a
+		}
+
+		ai_chance = {
+			base = 100
+			ai_value_modifier = {
+				ai_boldness = 1
+				ai_honor = -0.5
+			}
+		}
+	}
+}
+
+#Greatest of Khans picks nickname
+mpo_greatest_of_khans.0003 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	title = mpo_greatest_of_khans.0003.t
+	desc = mpo_greatest_of_khans.0003.desc
+	theme = nomads
+	left_portrait = {
+		character = root
+		animation = standing_horse
+		camera = camera_event_standing_with_horse_left
+	}
+	override_background = {
+		reference = mpo_temple_steppe
+	}
+	override_effect_2d = {
+		reference = legend_glow
+	}
+	option = {
+		trigger = {
+			NOT = {
+				culture = {
+					has_cultural_pillar = language_turkic
+				}
+			}
+		}
+		name = mpo_greatest_of_khans.0003.a
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_genghis_khan
+		ai_chance = {
+			base = 50
+			modifier = {
+				factor = 0
+				NOT = {
+					culture = {
+						has_cultural_pillar = language_mongolic
+					}
+				}
+			}
+			modifier = {
+				factor = 100
+				this = character:125501
+			}
+		}
+	}
+	option = {
+		trigger = {
+			culture = {
+				has_cultural_pillar = language_turkic
+			}
+		}
+		name = mpo_greatest_of_khans.0003.b
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_cengiz_khan
+		ai_chance = {
+			base = 50
+		}
+	}
+	option = {
+		trigger = {
+			culture = {
+				has_cultural_pillar = language_mongolic
+			}
+		}
+		name = mpo_greatest_of_khans.0003.c
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_yekhe_khagan
+		ai_chance = {
+			base = 50
+		}
+	}
+	option = {
+		trigger = {
+			culture = {
+				has_cultural_pillar = language_turkic
+			}
+		}
+		name = mpo_greatest_of_khans.0003.d
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_dort_yonlug_khagan
+		ai_chance = {
+			base = 50
+		}
+	}
+	option = {
+		trigger = {
+			NOR = {
+				faith.religion = religion:christianity_religion
+				faith.religion = religion:islam_religion
+			}
+		}
+		name = mpo_greatest_of_khans.0003.e
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_tengri_khagan
+		ai_chance = {
+			base = 50
+			modifier = {
+				add = -45
+				NOT = {
+					faith.religion = religion:tengrism_religion
+				}
+			}
+		}
+	}
+	option = {
+		trigger = {
+			OR = {
+				faith = faith:nestorian
+				faith.religion = faith:manichaean_faith.religion
+			}
+		}
+		name = mpo_greatest_of_khans.0003.f
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_xormuzta
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		trigger = {
+			faith.religion = religion:islam_religion
+			capital_province ?= {
+				OR = {
+					geographical_region = world_middle_east
+					geographical_region = world_asia_minor
+					geographical_region = world_steppe_tarim
+					geographical_region = world_steppe_central
+				}
+			}
+			current_date >= 1250
+		}
+		name = mpo_greatest_of_khans.0003.g
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_cihangir
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		trigger = {
+			faith = faith:nestorian
+		}
+		name = mpo_greatest_of_khans.0003.h
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_mar_sargis
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		trigger = {
+			culture = {
+				OR = {
+					has_cultural_pillar = language_iranian
+					has_cultural_pillar = language_scythian
+				}
+			}
+		}
+		name = mpo_greatest_of_khans.0003.i
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_akhshunwar
+		ai_chance = {
+			base = 100
+		}
+	}
+	option = {
+		name = mpo_greatest_of_khans.0003.j
+		if = {
+			limit = { has_any_nickname = yes }
+			remove_nickname = yes
+		}
+		give_nickname = nick_culture_khagan
+		ai_chance = {
+			base = 10
+		}
+	}
+	option = {
+		name = mpo_greatest_of_khans.0003.k
+		ai_chance = {
+			base = 0
+		}
+	}
+	after = {
+		#notification events go to other rulers
+
+		add_to_temporary_list = received_notification
+		every_vassal_or_below = {
+			limit = {
+				is_ai = no
+			}
+			trigger_event = {
+				id = mpo_greatest_of_khans.0002 #Someone has become Genghis Khan
+				days = 1
+			}
+			add_to_temporary_list = received_notification
+		}
+		every_ruler = {
+			limit = {
+				NOT = {
+					is_in_list = received_notification
+				}
+				save_temporary_scope_as = searching_for_confed # C&L: Need this to properly use changes added to mpo_greatest_of_khans_0002_confederation_trigger
+				OR = {
+					#Notify players
+					is_ai = no
+					#Give AI tributaries and herder neighbors chance to submit
+					#And strengthen confederations
+					AND = {
+						OR = {
+							AND = {
+								is_independent_ruler = yes
+								highest_held_title_tier <= tier_duchy
+								is_tributary = no
+							}
+							is_tributary_of_suzerain_or_above = root
+						}
+						OR = {
+							is_tributary_of_suzerain_or_above = root
+							#Is on the steppe and can join a confederation
+							AND = {
+								any_character_situation = {
+									this = situation:the_great_steppe
+								}
+								any_land_neighboring_realm_with_tributaries_owner = {
+									mpo_greatest_of_khans_0002_confederation_trigger = yes
+									save_temporary_scope_as = maybe_confederate
+								}
+								valid_confederation_member_trigger = { CHARACTER = scope:maybe_confederate }
+
+							}
+						}
+					}
+
+				}
+			}
+			trigger_event = {
+				id = mpo_greatest_of_khans.0002 #Someone has become Genghis Khan
+				days = 1
+			}
+		}
+	}
+}
+
+### Appearance of Genghis Khan (others)
+# by Petter Vilberg (updated by Jason Cantalini)
+mpo_greatest_of_khans.1001 = {
+	id_override_priority = 1 # C&L: Setting this definition to override the base game's
+	type = character_event
+	window = fullscreen_event
+	queue_icon = "gfx/interface/icons/situation_types/the_great_steppe.dds"
+	title = mongol_invasion.1002.t
+	desc = {
+		first_valid = {
+			triggered_desc = {
+				trigger = {
+					OR = {
+						any_realm_province = {
+							OR = {
+								geographical_region = special_mongol_empire_start_region
+								geographical_region = special_mongol_empire_conquest_region_prio_1
+								geographical_region = special_mongol_empire_conquest_region_prio_1_alpha
+							}
+						}
+						government_has_flag = government_is_nomadic
+					}
+				}
+				desc = {
+					desc = mongol_invasion.1002.desc.close
+					first_valid = {
+						triggered_desc = {
+							trigger = {
+								any_realm_province = {
+									geographical_region = special_mongol_empire_start_region
+								}
+							}
+							desc = mongol_invasion.1002.desc.close_mongolia
+						}
+						desc = mongol_invasion.1002.desc.close_steppes
+					}
+					desc = mongol_invasion.1002.desc.close.mid
+					#Great Khan or Genghis?
+					first_valid = {
+						triggered_desc = {
+							trigger = {
+								exists = scope:temujin
+							}
+							desc = mongol_invasion.1002.desc.genghis
+						}
+						desc = mongol_invasion.1002.desc.gok
+					}
+					desc = mongol_invasion.1002.desc.close.end
+				}
+			}
+
+			desc = {
+				desc = mongol_invasion.1002.desc.far_intro
+				first_valid = {
+					triggered_desc = {
+						trigger = {
+							exists = scope:temujin
+							root = scope:temujin
+						}
+						desc = mongol_invasion.1002.desc.genghis
+					}
+					desc = mongol_invasion.1002.desc.gok
+				}
+				desc = mongol_invasion.1002.desc.far
+			}
+		}
+	}
+	theme = nomads
+	left_portrait = {
+		character = scope:temujin
+		animation = celebrate_sword
+		camera = camera_event_left_forward
+	}
+	override_background = { reference = mpo_fullscreen_greatest_of_khans }
+
+	immediate = {
+		play_music_cue = mx_cue_conquest_of_the_golden_horde
+
+		scope:temujin = {
+			save_scope_as = genghis_khan
+			primary_title = {
+				save_scope_as = gok_title
+			}
+			show_as_tooltip = {
+				add_trait_force_tooltip = greatest_of_khans
+			}
+
+			custom_tooltip = genghis_khan_mongol_empire_tt
+			custom_tooltip = genghis_khan_mongol_troops_tt
+			custom_tooltip = gok_threatening_powers_tt
+			custom_tooltip = mongol_invasion.1002.genghis_khan_tt
+			mpo_add_golden_lineage_effect = yes
+		}
+
+		if = {
+			limit = {
+				OR = {
+					government_has_flag = government_is_nomadic
+					has_trait = nomadic_philosophy
+				}
+			}
+			custom_tooltip = become_gok_decision_now_unavailable_tt
+		}
+
+		save_scope_as = searching_for_confed # C&L: Need this to properly use changes added to mpo_greatest_of_khans_0002_confederation_trigger
+
+		#Save confederation if there is one
+		if = {
+			limit = {
+				any_land_neighboring_realm_with_tributaries_owner = {
+					mpo_greatest_of_khans_0002_confederation_trigger = yes
+					save_temporary_scope_as = confed_buddy
+				}
+				# C&L: Made this properly check if character is a valid member for confed_buddy's confederation/league
+				trigger_if = {
+					limit = {
+						scope:confed_buddy.confederation ?= { confederation_type = confederation_type:nomadic_confederation }
+					}
+					valid_confederation_member_trigger = { CHARACTER = scope:confed_buddy }
+				}
+				trigger_else_if = {
+					limit = {
+						scope:confed_buddy.confederation ?= { confederation_type = confederation_type:defensive_league_type }
+					}
+					valid_defensive_league_member_trigger = { CHARACTER = scope:confed_buddy }
+				}
+				is_at_war = no
+			}
+			ordered_land_neighboring_realm_with_tributaries_owner = {
+				order_by = current_military_strength
+				limit = {
+					mpo_greatest_of_khans_0002_confederation_trigger = yes
+				}
+				save_scope_as = confederation_neighbor
+				confederation = {
+					save_scope_as = confederation
+				}
+			}
+		}
+	}
+	#Submit to the Great Khan if you're already their tributary anyway
+	option = {
+		trigger = {
+			NOR = {
+				is_vassal_or_below_of = scope:genghis_khan
+				is_at_war_with = scope:genghis_khan
+			}
+			is_tributary_of_suzerain_or_above = scope:genghis_khan
+		}
+		name = mpo_greatest_of_khans.0002.a
+		#tributary of great khan's vassal or below
+		if = {
+			limit = {
+				is_tributary_of_suzerain_or_above = scope:genghis_khan
+				suzerain = {
+					highest_held_title_tier > root.highest_held_title_tier
+				}
+			}
+			suzerain = {
+				save_scope_as = new_liege
+			}
+			create_title_and_vassal_change = {
+				type = swear_fealty
+				save_scope_as = change
+			}
+			change_liege = {
+				liege = scope:new_liege
+				change = scope:change
+			}
+			resolve_title_and_vassal_change = scope:change
+		}
+		else = {
+			create_title_and_vassal_change = {
+				type = swear_fealty
+				save_scope_as = change
+			}
+			change_liege = {
+				liege = scope:genghis_khan
+				change = scope:change
+			}
+			resolve_title_and_vassal_change = scope:change
+		}
+
+		stress_and_fulfillment_impact = {
+			brave = minor_stress_impact_gain
+			stubborn = minor_stress_impact_gain
+		}
+		ai_chance = {
+			base = 200
+			ai_value_modifier = {
+				ai_boldness = 1
+			}
+			modifier = {
+				has_trait = ambitious
+				add = -20
+			}
+			modifier = {
+				has_dread_level_towards = {
+					target = scope:genghis_khan
+					level >= 1
+				}
+				add = 100
+			}
+			modifier = {
+				has_dread_level_towards = {
+					target = scope:genghis_khan
+					level >= 2
+				}
+				add = 200
+			}
+			modifier = {
+				government_has_flag = government_is_herder
+				add = 1000
+			}
+			modifier = {
+				add = 50
+				opinion = {
+					target = scope:genghis_khan
+					value >= 50
+				}
+			}
+			modifier = {
+				add = 50
+				opinion = {
+					target = scope:genghis_khan
+					value >= 75
+				}
+			}
+			modifier = {
+				add = -50
+				opinion = {
+					target = scope:genghis_khan
+					value <= -50
+				}
+			}
+			modifier = {
+				add = -50
+				opinion = {
+					target = scope:genghis_khan
+					value <= -75
+				}
+			}
+		}
+	}
+	#Join a confederation that's next to me
+	option = {
+		trigger = {
+			exists = scope:confederation
+		}
+		name = mpo_greatest_of_khans.0002.b
+		scope:confederation = { add_confederation_member = root }
+		scope:confederation_neighbor = {
+			if = {
+				limit = {
+					is_at_war = yes
+				}
+				every_character_war = {
+					limit = {
+						primary_defender = {
+							is_member_of_confederation = scope:confederation
+						}
+					}
+					add_defender = root
+				}
+			}
+		}
+		if = {
+			limit = {
+				government_has_flag = government_is_nomadic
+			}
+			add_character_modifier = {
+				modifier = mpo_confederation_member_modifier
+				years = 5
+			}
+			capital_county ?= {
+				change_county_fertility = major_county_fertility_level_gain
+			}
+		}
+		stress_and_fulfillment_impact = {
+			ambitious = minor_stress_impact_gain
+		}
+		ai_chance = {
+			base = 100
+			modifier = {
+				add = 50
+				opinion = {
+					target = scope:confederation_neighbor
+					value > 50
+				}
+			}
+			modifier = {
+				add = 50
+				opinion = {
+					target = scope:confederation_neighbor
+					value > 0
+				}
+			}
+			modifier = {
+				add = -50
+				opinion = {
+					target = scope:confederation_neighbor
+					value < -25
+				}
+			}
+			modifier = {
+				add = -50
+				opinion = {
+					target = scope:confederation_neighbor
+					value < -75
+				}
+			}
+			modifier = {
+				has_trait = ambitious
+				add = -50
+			}
+		}
+	}
+
+	option = { # Option for close characters
+		name = {
+			trigger = { has_trait = craven }
+			text = mongol_invasion.1002.craven
+		}
+		name = {
+			text = mongol_invasion.1002.a
+		}
+		trigger = {
+			government_has_flag = government_is_nomadic
+		}
+
+		if = {
+			limit = {
+				highest_held_title_tier < tier_empire
+			}
+			custom_tooltip = mongol_invasion_submission_reminder_tt
+		}
+		ai_chance = {
+			base = 100
+		}
+	}
+
+	option = { # Options for distant characters
+		name = {
+			text = mongol_invasion.1002.craven
+			trigger = { has_trait = craven }
+		}
+		name = {
+			text = mongol_invasion.1002.b
+		}
+		trigger = {
+			NOT = { government_has_flag = government_is_nomadic }
+		}
+		custom_tooltip = mongol_invasion.1002.genghis_khan_tt
+
+		if = {
+			limit = {
+				highest_held_title_tier < tier_empire
+			}
+		}
+		ai_chance = {
+			base = 100
+		}
+
+	}
+}

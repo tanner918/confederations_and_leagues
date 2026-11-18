@@ -8,14 +8,17 @@ CL_uses_confederations = {
 	}
 }
 
-## Checks if the character's government can use "Leagues"
+## Checks if the character's government can use "Defensive Leagues"
 # To be called from within a character scope
 CL_uses_leagues = {
 	OR = {
 		government_has_flag = government_is_feudal
 		government_has_flag = government_is_clan
-		government_has_flag = government_is_theocracy # Might turn this into a game rule
-		government_has_flag = government_is_republic # Might turn this into a game rule
+		AND = {
+			government_has_flag = government_is_theocracy # Might turn this into a game rule
+			is_landed = yes
+		}
+		#government_has_flag = government_is_republic # Republics use their own Trade Leagues
 		#has_variable = allowed_in_leagues # This is a variable to be added to a character on the off chance there is a situation where they should be allowed into a defensive league, even when they normally wouldn't be allowed to
 
 		# Below should let admin realms use leagues. But, given how admin realms work, with characters constantly switching between being landed/unlanded, I will likely not allow them in to prevent any issues. They also are less likely to ever be in a position where joining a defensive league would be necessary.

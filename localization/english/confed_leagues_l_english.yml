@@ -38,7 +38,7 @@
  leave_league_decision_tooltip: "Leave your [league|E] and forsake the support of your [league_members|E]"
  league_members_lose_opinion_tt: "Every [league_member|E] loses #N 20#! [opinion|E] of #high you#!"
 
- league_kingdom_decision: "Elevate League"
+ league_kingdom_decision: "Elevate Defensive League"
  league_kingdom_decision_desc: "What was once a bond of necessity — warriors sworn to stand together against the storm — must now become something greater. Let these independent leaders of this defensive league become vassals under a single banner."
  league_kingdom_decision_tooltip: "Disband the [league|E] and form a new [kingdom|E] with the [league_members|E]"
  league_empire_decision_tooltip: "Disband the [league|E] and form a new [empire|E] with the [league_members|E]"
@@ -46,26 +46,26 @@
  confederation_empire_decision_vassal_req: "You have at least #V 8#! members in the [confed_name.GetName|V]"
  confederation_empire_decision_vassal_opinion_req: "All members of the [confed_name.GetName|V] have at least #P 40#! [opinion|E] of you"
  confederation_empire_creation_tt: "You get an [empire|E]-[title_tier|E] [title|E] and all members of the [old_confederation.GetName|V] become your [vassals|E]\n@alert_icon!#alert_trial The Empire will have no [de_jure|E] lands#!"
- confed_league_no_king_members: "#N Your chosen setting for the \"[federation|E] Elevation\" game rule prevents elevation while a [king|E] is in the [confed_name.GetName|V] #!"
- cl_new_confederation_culture_tt: "A new [culture|E] will be created for the historical identity of your [federation|E]. The [traditions|E] of this new culture will be a mix of your current traditions with some randomly changed. Any of your [vassals|E] and [courtiers|E] that have the same [heritage|E] as you will convert to it, and it will be made the new \"Confederation Culture\" for the new title #weak (Characters of this culture will be preferred in elections for this title as long as it has the [GetLaw('confederation_elective_succession_law').GetName] [succession_law|E])#!."
+ confed_league_no_king_members: "#N Your chosen setting for the \"[confederation|E] Elevation\" game rule prevents elevation while a [king|E] is in the [confed_name.GetName|V] #!"
+ cl_new_confederation_culture_tt: "A new [culture|E] will be created for the historical identity of your [confederation|E]. The [traditions|E] of this new culture will be a mix of your current traditions with some randomly changed. Any of your [vassals|E] and [courtiers|E] that have the same [heritage|E] as you will convert to it, and it will be made the new \"Confederation Culture\" for the new title #weak (Characters of this culture will be preferred in elections for this title as long as it has the [GetLaw('confederation_elective_succession_law').GetName] [succession_law|E])#!."
 
 ## Concepts
  game_concept_league: "Defensive League"
  game_concept_leagues: "Defensive Leagues"
- game_concept_league_government: "League Government"
+ game_concept_league_government: "Defensive League Government"
  game_concept_league_desc: "A relation that binds [feudal|E], [clan|E], [republic|E], or [theocratic|E] [rulers|E] in mutual defense, similar to an [alliance|E]. Formed through the #high $call_for_league_decision$#! [decision|E], a defensive league requires its members to join each other's Defensive [wars|E]. Defensive leagues are visible in the Diplomacy tab.\n\nFellow [league_members|E] also may not attack or [raid|E] one another. They are restricted from high levels of [crown_authority|E], and may not create new [titles|E].\n\n[league_members|E] may use the #high $leave_league_decision$#! [decision|E] to become [independent|E]. If a defensive league is left with only one member, it is destroyed."
 
- game_concept_league_member: "League Member"
- game_concept_league_members: "League Members"
- game_concept_league_member_desc: "A [ruler|E] who is in a [league|E]. They will automatically join the Defensive [wars|E] of their fellow league members, and are restricted from attacking or [raiding|E] them."
+ game_concept_league_member: "Defensive League Member"
+ game_concept_league_members: "Defensive League Members"
+ game_concept_league_member_desc: "A [ruler|E] who is in a [league|E]. They will automatically join the Defensive [wars|E] of their fellow defensive league members, and are restricted from attacking or [raiding|E] them."
 
  game_concept_federation: "Federation"
  game_concept_federations: "Federations"
  game_concept_federation_desc: "A Federation is a broader term applying to both [confederations|E] and [leagues|E]."
 
 ## Laws
- tooltip_is_confederation_faith_hof: "Is [head_of_faith|E] of [federation|E]'s [rite|E] ([title.MakeScope.Var('confederation_faith').Rite.GetAdjective]): $VALUE|=+0$"
- tooltip_confederation_elector_faith_tt: "[candidate.GetSheHe|U] does not belong to the [federation|E]'s [rite|E] ([title.MakeScope.Var('confederation_faith').Rite.GetAdjective]): $VALUE|=+0$"
+ tooltip_is_confederation_faith_hof: "Is [head_of_faith|E] of [confederation|E]'s [rite|E] ([title.MakeScope.Var('confederation_faith').Rite.GetAdjective]): $VALUE|=+0$"
+ tooltip_confederation_elector_faith_tt: "[candidate.GetSheHe|U] does not belong to the [confederation|E]'s [rite|E] ([title.MakeScope.Var('confederation_faith').Rite.GetAdjective]): $VALUE|=+0$"
 
 ## Events
  mpo_interactions_events.0004.desc_offer_league: "No, I will not belong to any pitiful defensive league."
@@ -75,9 +75,9 @@
  mpo_decisions_events.0003.desc_league_done: "As I #EMP alone#! remain loyal to my oaths, my defensive league no longer has meaning. It is no more."
  leaver_destroyed_league_tt: "[leaver.GetShortUIName] disbanded your [league|E]"
 
- mpo_decisions_events.0002.t_league: "Forsaking Defensive League"
- mpo_decisions_events.0002.desc_league_survives: "Whose strength can these weaklings rely on now? Whose mercy? #EMP Whose peace?#! The defensive league can only fall into chaos.\n\nProsperity will belong to [ROOT.Char.GetPrimaryTitle.GetNameNoTier] alone."
- mpo_decisions_events.0002.desc_league_done: "With only [other_confederate.GetTitledFirstName] still holding to the oaths... the defensive league is no more. Peace? Prosperity? Those belong, now, only to the strong."
+ mpo_decisions_events.0002.t_defensive_league: "Forsaking Defensive League"
+ mpo_decisions_events.0002.desc_defensive_league_survives: "Whose strength can these weaklings rely on now? Whose mercy? #EMP Whose peace?#! The defensive league can only fall into chaos.\n\nProsperity will belong to [ROOT.Char.GetPrimaryTitle.GetNameNoTier] alone."
+ mpo_decisions_events.0002.desc_defensive_league_done: "With only [other_confederate.GetTitledFirstName] still holding to the oaths... the defensive league is no more. Peace? Prosperity? Those belong, now, only to the strong."
 
  mpo_decisions_events.0001.t_league: "Rallying Allies"
  mpo_decisions_events.0001.t_confederation: "Rallying the Tribes"
@@ -106,19 +106,13 @@
  setting_CL_allow_kingdoms_limited: "Limited"
  setting_CL_allow_kingdoms_limited_desc: "[kingdoms|E] ARE allowed to join a [confederation|E] or [league|E], as long as they have a [realm_size|E] of [EmptyScope.ScriptValue('CL_limited_kingdom_membership_realm_size')] [counties|E] or less."
  
- rule_CL_1178_lombard_league: "C&L: 1178 Lombard League"
- setting_CL_1178_lombard_league_off: "No"
- setting_CL_1178_lombard_league_off_desc: "The $cl_lombard_league$ will NOT form at game start in the 1178 bookmarks."
- setting_CL_1178_lombard_league_on: "Yes"
- setting_CL_1178_lombard_league_on_desc: "The $cl_lombard_league$ WILL form at game start in the 1178 bookmarks.\n#weak NOTE: There is currently no content related to this at this time outside of having it form at game start. #!"
-
- rule_CL_allow_elevation: "C&L: [federation|E] Elevation"
+ rule_CL_allow_elevation: "C&L: [confederation|E] Elevation"
  setting_CL_allow_elevation_off: "Off"
- setting_CL_allow_elevation_off_desc: "NO [federation|E] is allowed to elevate themselves into a unified title. #weak This makes the \"Elevate Confederation/Defensive League\" decision unavailable. #!"
+ setting_CL_allow_elevation_off_desc: "NO [confederation|E] is allowed to elevate themselves into a unified title. #weak This makes the \"Elevate Confederation/Defensive League\" decision unavailable. #!"
  setting_CL_allow_elevation_all_kingdoms: "All - Kingdoms"
- setting_CL_allow_elevation_all_kingdoms_desc: "Any [federation|E] can elevate to form a [kingdom|E]-[title_tier|E] [title|E]. #weak This makes the \"Elevate Confederation/Defensive League\" decision unavailable if one of your members is a king. #!"
+ setting_CL_allow_elevation_all_kingdoms_desc: "Any [confederation|E] can elevate to form a [kingdom|E]-[title_tier|E] [title|E]. #weak This makes the \"Elevate Confederation/Defensive League\" decision unavailable if one of your members is a king. #!"
  setting_CL_allow_elevation_all_empires: "All - Empires"
- setting_CL_allow_elevation_all_empires_desc: "Any [federation|E] can elevate to form up to an [empire|E]-[title_tier|E] [title|E]. #weak The \"Elevate Confederation/Defensive League\" decision creates an empire if one of your members is a king, and it will have harder conditions. #!"
+ setting_CL_allow_elevation_all_empires_desc: "Any [confederation|E] can elevate to form up to an [empire|E]-[title_tier|E] [title|E]. #weak The \"Elevate Confederation/Defensive League\" decision creates an empire if one of your members is a king, and it will have harder conditions. #!"
  setting_CL_allow_elevation_only_confederations_kingdoms: "Confederations - Kingdoms"
  setting_CL_allow_elevation_only_confederations_kingdoms_desc: "Only [confederations|E] can elevate themselves, and they can only form a [kingdom|E]-[title_tier|E] [title|E]. #weak This makes the \"Elevate Confederation\" decision unavailable if one of your members is a king. #!"
  setting_CL_allow_elevation_only_confederations_empires: "Confederations - Empires"
@@ -126,11 +120,11 @@
 
 ## Confederation/League Names
  # Anachronistic
- cl_peloponnesian_league: "Peloponnesian League"
+ cl_peloponnesian_league: "Peloponnesian Defensive League"
  cl_peloponnesian_league_adj: "Peloponnesian"
- cl_delian_league: "Delian League"
+ cl_delian_league: "Delian Defensive League"
  cl_delian_league_adj: "Delian"
- cl_aetolian_league: "Aetolian League"
+ cl_aetolian_league: "Aetolian Defensive League"
  cl_aetolian_league_adj: "Aetolian"
  # CK3 Time Period
  cl_masmuda_confederacy: "Masmuda Confederation"
@@ -145,8 +139,6 @@
  cl_chaoui_confederacy_adj: "Chaoui"
  cl_mozabite_confederacy: "Mozabite Confederation"
  cl_mozabite_confederacy_adj: "Mozabite"
- cl_lombard_league: "Lombard League"
- cl_lombard_league_adj: "Lombard"
  # Generic
  CONFEDERATION_KINGDOM_CULTURE_NAME: "[confederation_culture.GetNameNoTooltip|U] Confederation"
  CONFEDERATION_KINGDOM_CULTURE_NAME_ADJ: "[confederation_culture.GetNameNoTooltip|U]"
@@ -154,9 +146,9 @@
  CONFEDERATION_KINGDOM_FAITH_NAME_ADJ: "[confederation_faith.GetAdjectiveNoTooltip|U]"
  CONFEDERATION_KINGDOM_DUCHY_NAME: "[duchy_title_name.GetBaseNameNoTierNoTooltip|U] Confederation"
  CONFEDERATION_KINGDOM_DUCHY_NAME_ADJ: "[duchy_title_name.GetAdjectiveNoTooltip|U]"
- LEAGUE_KINGDOM_CULTURE_NAME: "[confederation_culture.GetNameNoTooltip|U] League"
- LEAGUE_KINGDOM_FAITH_NAME: "[confederation_faith.GetAdjectiveNoTooltip|U] League"
- LEAGUE_KINGDOM_DUCHY_NAME: "[duchy_title_name.GetBaseNameNoTierNoTooltip|U] League"
+ LEAGUE_KINGDOM_CULTURE_NAME: "[confederation_culture.GetNameNoTooltip|U] Defensive League"
+ LEAGUE_KINGDOM_FAITH_NAME: "[confederation_faith.GetAdjectiveNoTooltip|U] Defensive League"
+ LEAGUE_KINGDOM_DUCHY_NAME: "[duchy_title_name.GetBaseNameNoTierNoTooltip|U] Defensive League"
 
 ## Cultures
  masmuda_name: "Masmuda"

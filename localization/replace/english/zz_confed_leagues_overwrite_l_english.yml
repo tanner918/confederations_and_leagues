@@ -1,11 +1,11 @@
 ﻿l_english:
 ## Laws
- tooltip_confederation_elector_culture_tt: "[candidate.GetSheHe|U] does not belong to the [federation|E]'s [culture|E] ([title.MakeScope.Var('confederation_culture').Culture.GetName]): $VALUE|=+0$"
+ tooltip_confederation_elector_culture_tt: "[candidate.GetSheHe|U] does not belong to the [confederation|E]'s [culture|E] ([title.MakeScope.Var('confederation_culture').Culture.GetName]): $VALUE|=+0$"
 
  confederation_elective_succession_law: "Federation Elective"
- confederation_elective_candidates_tooltip: "In order to be a valid Candidate under [federation|E] Elective, a character must fulfill one of the following conditions:\n$EFFECT_LIST_BULLET$Be a legitimate [close_family|E] member of the current ruler\n$EFFECT_LIST_BULLET$Be a [vassal|E]\n#weak C&L Note: Due to the way the election inheritance laws are handled, if a vassal were to inherit the title with this succession law, they will have their government forcefully changed to whatever government the previous holder had. So, for example, if the holder of the title is Feudal, and their title heir is Clan, that Clan heir, when they inherit this title, will become Feudal. Until I figure out how to get around this, landed candidates must have the same government as the current holder."
+ confederation_elective_candidates_tooltip: "In order to be a valid Candidate under [confederation|E] Elective, a character must fulfill one of the following conditions:\n$EFFECT_LIST_BULLET$Be a legitimate [close_family|E] member of the current ruler\n$EFFECT_LIST_BULLET$Be a [vassal|E]\n#weak C&L Note: Due to the way the election inheritance laws are handled, if a vassal were to inherit the title with this succession law, they will have their government forcefully changed to whatever government the previous holder had. So, for example, if the holder of the title is Feudal, and their title heir is Clan, that Clan heir, when they inherit this title, will become Feudal. Until I figure out how to get around this, landed candidates must have the same government as the current holder."
  confederation_elective_succession_law_effects: "The [ruler|E] and all direct [vassals|E] can nominate a [title_heir|E] from among themselves and the [close_family|E] of the ruler. [voting_strength|E] is primarily determined by [prestige_level|E], [piety_level|E], and, for [confederation|E]-based kingdoms, the number of [count|E]-[title_tier|E] [vassals|E]."
- confederation_elective_electors_tooltip: "In order to be a valid [elector|E] under [federation|E] Elective, a vassal must fulfill all the following conditions:\n$EFFECT_LIST_BULLET$Be [count|E]-[rank|E] or higher\n$EFFECT_LIST_BULLET$Be a direct [vassal|E] of the [title|E]\n$EFFECT_LIST_BULLET$Has valid [government|E] for the [confederation|E]- or [league|E]-kingdom\n$EFFECT_LIST_BULLET$Not have the [GetTrait('incapable').GetName( GetNullCharacter )] [trait|E]\n$EFFECT_LIST_BULLET$Not be at [war|E] with the [title|E] holder"
+ confederation_elective_electors_tooltip: "In order to be a valid [elector|E] under [confederation|E] Elective, a vassal must fulfill all the following conditions:\n$EFFECT_LIST_BULLET$Be [count|E]-[rank|E] or higher\n$EFFECT_LIST_BULLET$Be a direct [vassal|E] of the [title|E]\n$EFFECT_LIST_BULLET$Has valid [government|E] for the [confederation|E]- or [league|E]-kingdom\n$EFFECT_LIST_BULLET$Not have the [GetTrait('incapable').GetName( GetNullCharacter )] [trait|E]\n$EFFECT_LIST_BULLET$Not be at [war|E] with the [title|E] holder"
 
 ## Character Interactions
  NO_FRIGHTENING_NEIGHBOR_REASON: "Has no neighboring [ruler|E] worth defending against: $VALUE|=+0$"
@@ -38,12 +38,15 @@
  CONFEDERATION_YOURS_HEADER: "Your [Confederation.GetType.GetNameNoTooltip]"
  CONFEDERATION_TOOLTIP_MEMBER_OF: "a member of the #high [CONFEDERATION.GetName]#!"
  CONFEDERATION_TOOLTIP_NUMBER_OF_MEMBERS: "Members: [CONFEDERATION.GetMemberCount|V]"
- CONFEDERATION_CONCEPT: "[federation|E]"
+ CONFEDERATION_CONCEPT: "[confederation|E]"
 
 ## Modifiers
  confederate_king_modifier: "First Leader of the Federation"
- confederate_king_modifier_desc: "This character forged a new realm out of a [federation|E]"
+ confederate_king_modifier_desc: "This character forged a new realm out of a [confederation|E]"
  confederate_vassal_modifier: "First Vassal of the Federation"
- confederate_vassal_modifier_desc: "This character was part of a [federation|E] that was elevated into a single realm"
+ confederate_vassal_modifier_desc: "This character was part of a [confederation|E] that was elevated into a single realm"
  confederate_lands_modifier: "Federation Lands"
- confederate_lands_modifier_desc: "These lands are reaping benefits from a [federation|E] that was elevated into a single realm"
+ confederate_lands_modifier_desc: "These lands are reaping benefits from a [confederation|E] that was elevated into a single realm"
+
+## Game Concepts
+ game_concept_confederation_desc: "A $game_concept_confederation$ is a formal association of [rulers|E], [houses|E], or [titles|E] that binds its members more closely than an [alliance|E]. Members are expected to come to each other's defense.\n\nWhat a Confederation demands, and what it rewards, depends on its kind:\n$BULLET_WITH_TAB$[nomadic_confederation|E]\n$BULLET_WITH_TAB$[league|E]\n$BULLET_WITH_TAB$[house_bloc|E]\n$BULLET_WITH_TAB$[trade_league|E]\n\nHouse Blocs and Trade Leagues also build [confederation_cohesion|E], granting escalating benefits as their members grow more united."

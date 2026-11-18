@@ -7,6 +7,8 @@
 @crown_authority_cooldown_years = 20
 @tribal_authority_cooldown_years = 10
 @nomadic_authority_cooldown_years = 5
+@company_size_cooldown_years = 5
+@company_purpose_cooldown_years = 5
 @church_authority_cooldown_years = 20
 @imperial_bureaucracy_cooldown_years_1 = 10
 @imperial_bureaucracy_cooldown_years_2 = 20
@@ -22,6 +24,15 @@
 
 @mandala_decree_piety_cost = 1000
 @mandala_decree_prestige_cost = 500
+
+@company_purpose_prestige_cost = 500
+@company_size_prestige_cost = 300
+@company_purpose_ai_will_do_malus_t3 = -30
+@company_purpose_ai_will_do_malus_t2 = -20
+@company_purpose_ai_will_do_malus_t1 = -10
+@company_purpose_ai_will_do_bonus_t1 = 10
+@company_purpose_ai_will_do_bonus_t2 = 20
+@company_purpose_ai_will_do_bonus_t3 = 30
 
 crown_authority_2 = {
 	law_group_type = crown_authority
@@ -103,6 +114,10 @@ crown_authority_2 = {
 		remove_law_related_modifiers_effect = yes
 	}
 
+	requires_approve = {
+		always = no
+	}
+
 	ai_will_do = {
 		if = {
 			limit = { has_realm_law = crown_authority_1 }
@@ -180,5 +195,9 @@ crown_authority_3 = {
 		}
 		# Remove modifiers.
 		remove_law_related_modifiers_effect = yes
+	}
+
+	requires_approve = {
+		always = no
 	}
 }

@@ -2,6 +2,7 @@
 
 ## Defensive League
 defensive_league_type = {
+	diplomatic_icon_frame_index = 5
 
 	# Checks if a character can join the defensive league
 	#
@@ -57,7 +58,10 @@ defensive_league_type = {
 		}
 		# Notify all other members about them joining.
 		every_player = {
-			limit = { confederation = scope:confederation }
+			limit = { 
+				confederation = scope:confederation
+				this != scope:character
+			}
 			send_interface_message = {
 				type = msg_joined_confederation
 				title = msg_joined_league
@@ -143,6 +147,7 @@ defensive_league_type = {
 ## Nomadic Confederation
 # Overwriting base game definition to make sure it properly works with the League/Confederation government split
 nomadic_confederation = {
+	diplomatic_icon_frame_index = 5
 
 	# Checks if a character can join the nomadic confederation
 	#
@@ -198,7 +203,10 @@ nomadic_confederation = {
 		}
 		# Notify all other members about them joining.
 		every_player = {
-			limit = { confederation = scope:confederation }
+			limit = { 
+				confederation = scope:confederation
+				this != scope:character
+			}
 			send_interface_message = {
 				type = msg_joined_confederation
 				title = msg_joined_confederation
@@ -262,11 +270,10 @@ nomadic_confederation = {
 					confederation = scope:confederation
 					this != scope:left_confederation
 				}
-				# C&L: Base game gives out a notification saying the character joined the confederation, instead of leaving the confederation
 				send_interface_message = {
-					type = msg_broken_confederation
-					title = msg_broken_confederation_no_migrate
-					desc = msg_broken_confederation_desc_no_migrate
+					type = msg_left_confederation
+					title = msg_left_confederation
+					desc = msg_left_confederation_desc
 					left_icon = scope:left_confederation
 				}
 			}
